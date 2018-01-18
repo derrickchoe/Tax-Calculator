@@ -1,32 +1,21 @@
 # HOW TO SPECIFY A TAX REFORM IN A POLICY REFORM FILE
 
-A tax reform consists of a collection of reform provisions.  There is
-a way to specify in a text file the collection of reform provisions
-that make up a reform proposal.  When stored on your local computer,
-such reform files can be used to estimate reform effects either by
+A tax reform consists of a series of reform provisions.  There is a
+way to specify in a text file the collection of reform provisions that
+make up a reform proposal.  When stored on your local computer, such
+reform files can be used to estimate reform effects either by
 uploading to the [TaxBrain webapp](http://www.ospc.org/taxbrain/file/)
-or by using the `--reform` option of the [Tax-Calculator command-line
-tool,
-tc](http://open-source-economics.github.io/Tax-Calculator/index.html#cli).
+or by using the `--reform` option of the [tc
+CLI](http://open-source-economics.github.io/Tax-Calculator/index.html#cli)
+(command-line interface) to Tax-Calculator.
 
 Here we provide links to several reform files that specify historical
 reform proposals, and then provide a more general explanation of the
 structure and syntax of reform files.
 
-## Tax Reforms Defined Relative to TCJA Policy
+## Historical Tax Reforms
 
-Note that the current-law (that is, TCJA) values of each tax policy
-parameter are shown in the [Policy Parameters section of the user
-documentation](http://open-source-economics.github.io/Tax-Calculator/index.html#pol).
-
-- [Pre-TCJA Policy](2017_law.json)
-
-## Tax Reforms Defined Relative to pre-TCJA Policy
-
-Read the answer to [Question 1 in this
-FAQ](https://github.com/open-source-economics/Tax-Calculator/issues/1830)
-to see how to use the compound-reform techique to analyze the reforms
-in this section.
+The following reform proposals have been specified in reforms files:
 
 - [2016 Trump Campaign Tax Plan](Trump2016.json)
 
@@ -34,7 +23,7 @@ in this section.
 
 - [2016 Ryan-Brady "Better Way" Tax Plan](RyanBrady.json)
 
-- [2017 Trump Administration Tax Plan](Trump2017.json)
+- [2017 Trump Administration Tax Plan](Trump2017.json) and [analysis of earnings shifting under the reform](https://github.com/open-source-economics/Tax-Calculator/pull/1464#issuecomment-315616386)
 
 - [2017 Brown-Khanna GAIN Act](BrownKhanna.json)
 
@@ -51,8 +40,8 @@ in this section.
 ## Structure and Syntax of Reform Files
 
 The reform files are JSON files.  JSON, which stands for JavaScript
-Object Notation, is an easy and widely used way to specify structured
-information.  First we provide an abstract example of a JSON reform
+Object Notation, is an easy way to specify structured information that
+is widely used.  First we provide an abstract example of a JSON reform
 file with some explanation, and then we provide links to a few
 hypothetical reform files that illustrate their expressive range.
 
@@ -81,12 +70,14 @@ The <parameter_value> is enclosed in single brackets when
 the <parameter_value> is a scalar and enclosed in double brackets when
 the <parameter_value> is a vector.  The most common vector of values
 is one that varies by filing status (MARS) with the vector containing
-five parameter values for single, married filing joint, married filing
-separate, head of household, widow.
+six parameter values for single, married filing joint, married filing
+separate, head of household, widow, separate.
 
-The following hypothetical payroll tax reforms, all of which are
-defined relative to pre-TCJA policy, illustrate the flexibility that
-reform files provide in expressing complex tax reforms.
+The following hypothetical payroll tax reforms illustrate the
+flexibility that reform files provide in expressing complex tax
+reforms.  Note that the current-law values of each tax parameter are
+shown in the Policy Parameters section of the [user
+documentation](http://open-source-economics.github.io/Tax-Calculator/index.html#pol).
 
 [Raise OASDI and HI payroll tax rates](ptaxes0.json)
 

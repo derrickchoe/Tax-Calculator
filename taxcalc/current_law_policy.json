@@ -26,8 +26,7 @@
         "range": {"min": -0.005, "max": 0.005},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_FICA_ss_trt": {
@@ -49,8 +48,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_SS_Earnings_c": {
@@ -80,8 +78,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_FICA_mc_trt": {
@@ -103,8 +100,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_AMEDT_ec": {
@@ -126,8 +122,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_AMEDT_rt": {
@@ -149,8 +144,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
 
@@ -173,8 +167,7 @@
         "range": {"min": 0, "max": "_SS_thd85"},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "for _SS_thd85",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_SS_percentage1": {
@@ -196,8 +189,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_SS_thd85": {
@@ -219,8 +211,7 @@
         "range": {"min": "_SS_thd50", "max": 9e99},
         "out_of_range_minmsg": "for _SS_thd50",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_SS_percentage2": {
@@ -242,8 +233,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
 
@@ -266,8 +256,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ALD_SelfEmploymentTax_hc": {
@@ -289,8 +278,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ALD_SelfEmp_HealthIns_hc": {
@@ -312,8 +300,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ALD_KEOGH_SEP_hc": {
@@ -335,8 +322,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ALD_EarlyWithdraw_hc": {
@@ -358,8 +344,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     },
 
     "_ALD_AlimonyPaid_hc": {
@@ -407,8 +392,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     },
 
     "_ALD_AlimonyReceived_hc": {
@@ -456,8 +440,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ALD_EducatorExpenses_hc": {
@@ -479,8 +462,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     },
 
     "_ALD_HSADeduction_hc": {
@@ -502,8 +484,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     },
 
     "_ALD_IRAContributions_hc": {
@@ -525,8 +506,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ALD_DomesticProduction_hc": {
@@ -574,8 +554,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ALD_Tuition_hc": {
@@ -597,8 +576,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     },
 
     "_ALD_InvInc_ec_rt": {
@@ -620,8 +598,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ALD_InvInc_ec_base_RyanBrady": {
@@ -643,8 +620,7 @@
         "range": {"min": false, "max": true},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     },
 
     "_ALD_Dependents_hc": {
@@ -666,8 +642,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ALD_Dependents_Child_c": {
@@ -697,8 +672,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ALD_Dependents_Elder_c": {
@@ -728,8 +702,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ALD_Dependents_thd": {
@@ -751,8 +724,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ALD_BusinessLosses_c": {
@@ -800,8 +772,7 @@
         "range": {"min": 0.0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_em": {
@@ -849,8 +820,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_em_ps": {
@@ -880,8 +850,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_prt": {
@@ -903,8 +872,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_no_em_nu18": {
@@ -926,8 +894,7 @@
         "range": {"min": false, "max": true},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_STD": {
@@ -975,8 +942,7 @@
         "range": {"min": "default", "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "warn",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "warn"
     },
 
     "_STD_Dep": {
@@ -1006,8 +972,7 @@
         "range": {"min": "default", "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "warn",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "warn"
     },
 
     "_STD_Aged": {
@@ -1037,8 +1002,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_STD_allow_charity_ded_nonitemizers": {
@@ -1060,8 +1024,7 @@
         "range": {"min": false, "max": true},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_credit": {
@@ -1091,8 +1054,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_credit_ps": {
@@ -1122,8 +1084,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_credit_prt": {
@@ -1145,8 +1106,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_credit_nr": {
@@ -1176,8 +1136,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_credit_nr_ps": {
@@ -1207,8 +1166,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_credit_nr_prt": {
@@ -1230,8 +1188,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ID_Medical_frt": {
@@ -1265,8 +1222,7 @@
         "range": {"min": 0.075, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "warn",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "warn"
     },
 
     "_ID_Medical_frt_add4aged": {
@@ -1296,8 +1252,7 @@
         "range": {"min": -0.025, "max": 0.0},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "warn",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "warn"
     },
 
     "_ID_Medical_hc": {
@@ -1319,8 +1274,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ID_Medical_c": {
@@ -1350,8 +1304,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ID_StateLocalTax_hc": {
@@ -1373,8 +1326,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ID_StateLocalTax_crt": {
@@ -1396,8 +1348,7 @@
         "range": {"min": 0.0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ID_StateLocalTax_c": {
@@ -1427,8 +1378,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ID_RealEstate_hc": {
@@ -1450,8 +1400,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ID_RealEstate_crt": {
@@ -1473,8 +1422,7 @@
         "range": {"min": 0.0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ID_RealEstate_c": {
@@ -1504,8 +1452,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ID_AllTaxes_c": {
@@ -1553,8 +1500,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ID_InterestPaid_hc": {
@@ -1576,8 +1522,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ID_InterestPaid_c": {
@@ -1607,8 +1552,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ID_Charity_crt_all": {
@@ -1656,8 +1600,7 @@
         "range": {"min": 0.0, "max": 0.6},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "warn",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "warn"
     },
 
     "_ID_Charity_crt_noncash": {
@@ -1679,8 +1622,7 @@
         "range": {"min": 0.0, "max": 0.3},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "warn",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "warn"
     },
 
     "_ID_Charity_frt": {
@@ -1702,8 +1644,7 @@
         "range": {"min": 0.0, "max": 1.0},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
 
@@ -1726,8 +1667,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ID_Charity_c": {
@@ -1757,8 +1697,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ID_Casualty_frt": {
@@ -1780,8 +1719,7 @@
         "range": {"min": 0.1, "max": 1.0},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "warn",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "warn"
     },
 
     "_ID_Casualty_hc": {
@@ -1829,8 +1767,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     },
 
     "_ID_Casualty_c": {
@@ -1860,8 +1797,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     },
 
     "_ID_Miscellaneous_frt": {
@@ -1883,8 +1819,7 @@
         "range": {"min": 0.02, "max": 1.00},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "warn",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "warn"
     },
 
     "_ID_Miscellaneous_hc": {
@@ -1932,8 +1867,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ID_Miscellaneous_c": {
@@ -1963,8 +1897,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ID_ps": {
@@ -1994,8 +1927,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ID_prt": {
@@ -2043,8 +1975,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ID_crt": {
@@ -2092,8 +2023,7 @@
         "range": {"min": 0.0, "max": 1.0},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "warn",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "warn"
     },
 
     "_ID_BenefitSurtax_trt": {
@@ -2115,8 +2045,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
 
@@ -2139,8 +2068,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ID_BenefitSurtax_em": {
@@ -2170,8 +2098,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ID_BenefitSurtax_Switch": {
@@ -2193,8 +2120,7 @@
         "range": {"min": false, "max": true},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ID_BenefitCap_rt": {
@@ -2216,8 +2142,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
 
@@ -2240,8 +2165,7 @@
         "range": {"min": false, "max": true},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ID_c": {
@@ -2271,8 +2195,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ID_AmountCap_rt": {
@@ -2294,8 +2217,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
 
@@ -2318,8 +2240,7 @@
         "range": {"min": false, "max": true},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CG_rt1": {
@@ -2341,8 +2262,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CG_brk1": {
@@ -2372,8 +2292,7 @@
         "range": {"min": 0, "max": "_CG_brk2"},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "for _CG_brk2",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CG_rt2": {
@@ -2395,8 +2314,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CG_brk2": {
@@ -2426,8 +2344,7 @@
         "range": {"min": "_CG_brk1", "max": "_CG_brk3"},
         "out_of_range_minmsg": "for _CG_brk1",
         "out_of_range_maxmsg": "for _CG_brk3",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CG_rt3": {
@@ -2449,8 +2366,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CG_brk3": {
@@ -2480,8 +2396,7 @@
         "range": {"min": "_CG_brk2", "max": 9e99},
         "out_of_range_minmsg": "for _CG_brk2",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CG_rt4": {
@@ -2503,8 +2418,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
 
@@ -2527,8 +2441,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_AMT_CG_brk1": {
@@ -2558,8 +2471,7 @@
         "range": {"min": 0, "max": "_AMT_CG_brk2"},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "for _AMT_CG_brk2",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
 
@@ -2582,8 +2494,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_AMT_CG_brk2": {
@@ -2613,8 +2524,7 @@
         "range": {"min": "_AMT_CG_brk1", "max": "_AMT_CG_brk3"},
         "out_of_range_minmsg": "for _AMT_CG_brk1",
         "out_of_range_maxmsg": "for _AMT_CG_brk3",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_AMT_CG_rt3": {
@@ -2636,8 +2546,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_AMT_CG_brk3": {
@@ -2667,8 +2576,7 @@
         "range": {"min": "_AMT_CG_brk2", "max": 9e99},
         "out_of_range_minmsg": "for _AMT_CG_brk2",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_AMT_CG_rt4": {
@@ -2690,8 +2598,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     },
 
 
@@ -2714,8 +2621,7 @@
         "range": {"min": false, "max": true},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CG_ec": {
@@ -2745,8 +2651,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CG_reinvest_ec_rt": {
@@ -2768,8 +2673,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_rt1": {
@@ -2817,8 +2721,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_brk1": {
@@ -2866,8 +2769,7 @@
         "range": {"min": 0, "max": "_II_brk2"},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "for _II_brk2",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_rt2": {
@@ -2915,8 +2817,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_brk2": {
@@ -2964,8 +2865,7 @@
         "range": {"min": "_II_brk1", "max": "_II_brk3"},
         "out_of_range_minmsg": "for _II_brk1",
         "out_of_range_maxmsg": "for _II_brk3",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_rt3": {
@@ -3013,8 +2913,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_brk3": {
@@ -3062,8 +2961,7 @@
         "range": {"min": "_II_brk2", "max": "_II_brk4"},
         "out_of_range_minmsg": "for _II_brk2",
         "out_of_range_maxmsg": "for _II_brk4",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_rt4": {
@@ -3111,8 +3009,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_brk4": {
@@ -3160,8 +3057,7 @@
         "range": {"min": "_II_brk3", "max": "_II_brk5"},
         "out_of_range_minmsg": "for _II_brk3",
         "out_of_range_maxmsg": "for _II_brk5",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_rt5": {
@@ -3209,8 +3105,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_brk5": {
@@ -3258,8 +3153,7 @@
         "range": {"min": "_II_brk4", "max": "_II_brk6"},
         "out_of_range_minmsg": "for _II_brk4",
         "out_of_range_maxmsg": "for _II_brk6",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_rt6": {
@@ -3307,8 +3201,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_brk6": {
@@ -3356,8 +3249,7 @@
         "range": {"min": "_II_brk5", "max": "_II_brk7"},
         "out_of_range_minmsg": "for _II_brk5",
         "out_of_range_maxmsg": "for _II_brk7",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_rt7": {
@@ -3405,8 +3297,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_brk7": {
@@ -3454,8 +3345,7 @@
         "range": {"min": "_II_brk6", "max": 9e99},
         "out_of_range_minmsg": "for _II_brk6",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_II_rt8": {
@@ -3477,8 +3367,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_PT_rt1": {
@@ -3526,8 +3415,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_PT_brk1": {
@@ -3575,8 +3463,7 @@
         "range": {"min": 0, "max": "_PT_brk2"},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "for _PT_brk2",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_PT_rt2": {
@@ -3624,8 +3511,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
 
@@ -3674,8 +3560,7 @@
         "range": {"min": "_PT_brk1", "max": "_PT_brk3"},
         "out_of_range_minmsg": "for _PT_brk1",
         "out_of_range_maxmsg": "for _PT_brk3",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_PT_rt3": {
@@ -3723,8 +3608,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_PT_brk3": {
@@ -3772,8 +3656,7 @@
         "range": {"min": "_PT_brk2", "max": "_PT_brk4"},
         "out_of_range_minmsg": "for _PT_brk2",
         "out_of_range_maxmsg": "for _PT_brk4",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_PT_rt4": {
@@ -3821,8 +3704,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_PT_brk4": {
@@ -3870,8 +3752,7 @@
         "range": {"min": "_PT_brk3", "max": "_PT_brk5"},
         "out_of_range_minmsg": "for _PT_brk3",
         "out_of_range_maxmsg": "for _PT_brk5",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_PT_rt5": {
@@ -3919,8 +3800,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_PT_brk5": {
@@ -3968,8 +3848,7 @@
         "range": {"min": "_PT_brk4", "max": "_PT_brk6"},
         "out_of_range_minmsg": "for _PT_brk4",
         "out_of_range_maxmsg": "for _PT_brk6",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_PT_rt6": {
@@ -4017,8 +3896,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_PT_brk6": {
@@ -4066,8 +3944,7 @@
         "range": {"min": "_PT_brk5", "max": "_PT_brk7"},
         "out_of_range_minmsg": "for _PT_brk5",
         "out_of_range_maxmsg": "for _PT_brk7",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_PT_rt7": {
@@ -4115,8 +3992,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_PT_brk7": {
@@ -4164,8 +4040,7 @@
         "range": {"min": "_PT_brk6", "max": 9e99},
         "out_of_range_minmsg": "for _PT_brk6",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_PT_rt8": {
@@ -4187,8 +4062,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_PT_EligibleRate_active": {
@@ -4210,8 +4084,7 @@
         "range": {"min": 0.0, "max": 1.0},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_PT_EligibleRate_passive": {
@@ -4233,8 +4106,7 @@
         "range": {"min": 0.0, "max": 1.0},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     },
 
     "_PT_wages_active_income": {
@@ -4256,8 +4128,7 @@
         "range": {"min": false, "max": true},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": false, "cps": false}
+        "out_of_range_action": "stop"
     },
 
     "_PT_top_stacking": {
@@ -4279,8 +4150,7 @@
         "range": {"min": false, "max": true},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_PT_excl_rt": {
@@ -4328,8 +4198,7 @@
         "range": {"min": 0.0, "max": 1.0},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_PT_excl_wagelim_rt": {
@@ -4377,8 +4246,7 @@
         "range": {"min": 0.0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_PT_excl_wagelim_thd": {
@@ -4426,8 +4294,7 @@
         "range": {"min": 0.0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_PT_excl_wagelim_prt": {
@@ -4475,8 +4342,7 @@
         "range": {"min": 0.0, "max": 1.0},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_AMT_em": {
@@ -4525,8 +4391,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_AMT_prt": {
@@ -4549,8 +4414,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_AMT_em_ps": {
@@ -4599,8 +4463,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_AMT_Child_em": {
@@ -4630,8 +4493,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_AMT_KT_c_Age": {
@@ -4653,8 +4515,7 @@
         "range": {"min": 0, "max": 30},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_AMT_rt1": {
@@ -4677,8 +4538,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_AMT_brk1": {
@@ -4709,8 +4569,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_AMT_rt2": {
@@ -4733,8 +4592,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_AMT_em_pe": {
@@ -4762,8 +4620,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     },
 
     "_CDCC_c": {
@@ -4785,8 +4642,7 @@
         "range": {"min": 0, "max": 3000},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CDCC_ps": {
@@ -4807,8 +4663,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CDCC_crt": {
@@ -4830,8 +4685,7 @@
         "range": {"min": 0, "max": 100},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CTC_c": {
@@ -4879,8 +4733,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CTC_c_under5_bonus": {
@@ -4902,8 +4755,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CTC_ps": {
@@ -4951,8 +4803,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CTC_prt": {
@@ -4974,8 +4825,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
 
@@ -4998,8 +4848,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_DependentCredit_Child_c": {
@@ -5047,8 +4896,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_DependentCredit_Nonchild_c": {
@@ -5096,8 +4944,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_DependentCredit_before_CTC": {
@@ -5129,8 +4976,7 @@
         "range": {"min": false, "max": true},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_FilerCredit_c": {
@@ -5152,8 +4998,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_NIIT_thd": {
@@ -5175,8 +5020,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_NIIT_PT_taxed": {
@@ -5198,8 +5042,7 @@
         "range": {"min": false, "max": true},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     },
 
     "_NIIT_rt": {
@@ -5221,8 +5064,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_EITC_c": {
@@ -5252,8 +5094,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_EITC_rt": {
@@ -5275,8 +5116,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
 
@@ -5299,8 +5139,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_EITC_ps": {
@@ -5330,8 +5169,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_EITC_ps_MarriedJ": {
@@ -5361,8 +5199,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_EITC_MinEligAge": {
@@ -5384,8 +5221,7 @@
         "range": {"min": 0, "max": 125},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_EITC_MaxEligAge": {
@@ -5407,8 +5243,7 @@
         "range": {"min": 0, "max": 125},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
 
@@ -5439,8 +5274,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_EITC_indiv": {
@@ -5462,8 +5296,7 @@
         "range": {"min": false, "max": true},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_LLC_Expense_c": {
@@ -5485,8 +5318,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     },
 
     "_ETC_pe_Single": {
@@ -5514,8 +5346,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     },
 
     "_ETC_pe_Married": {
@@ -5543,8 +5374,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     },
 
     "_ACTC_rt": {
@@ -5566,8 +5396,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ACTC_rt_bonus_under5family": {
@@ -5589,8 +5418,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ACTC_Income_thd": {
@@ -5638,8 +5466,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_ACTC_ChildNum": {
@@ -5661,8 +5488,7 @@
         "range": {"min": 0, "max": 99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CTC_new_c": {
@@ -5684,8 +5510,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CTC_new_c_under5_bonus": {
@@ -5707,8 +5532,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CTC_new_for_all": {
@@ -5730,8 +5554,7 @@
         "range": {"min": false, "max": true},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CTC_new_rt": {
@@ -5753,8 +5576,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CTC_new_ps": {
@@ -5784,8 +5606,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CTC_new_prt": {
@@ -5807,8 +5628,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CTC_new_refund_limited": {
@@ -5830,8 +5650,7 @@
         "range": {"min": false, "max": true},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CTC_new_refund_limit_payroll_rt": {
@@ -5853,8 +5672,7 @@
         "range": {"min": 0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CTC_new_refund_limited_all_payroll": {
@@ -5876,8 +5694,7 @@
         "range": {"min": false, "max": true},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_FST_AGI_trt": {
@@ -5899,8 +5716,7 @@
         "range": {"min": 0.0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_FST_AGI_thd_lo": {
@@ -5930,8 +5746,7 @@
         "range": {"min": 0.0, "max": "_FST_AGI_thd_hi"},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "for _FST_AGI_thd_hi",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_FST_AGI_thd_hi": {
@@ -5961,8 +5776,7 @@
         "range": {"min": "_FST_AGI_thd_lo", "max": 9e99},
         "out_of_range_minmsg": "for _FST_AGI_thd_lo",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
 
@@ -5985,8 +5799,7 @@
         "range": {"min": 0.0, "max": 1.0},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_AGI_surtax_thd": {
@@ -6016,8 +5829,7 @@
         "range": {"min": 0.0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_LST": {
@@ -6039,8 +5851,7 @@
         "range": {"min": -9e99, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_UBI_u18": {
@@ -6070,8 +5881,7 @@
         "range": {"min": 0.0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_UBI_1820": {
@@ -6101,8 +5911,7 @@
         "range": {"min": 0.0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_UBI_21": {
@@ -6132,8 +5941,7 @@
         "range": {"min": 0.0, "max": 9e99},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_UBI_ecrt": {
@@ -6155,8 +5963,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "out_of_range_action": "stop"
     },
 
     "_CR_RetirementSavings_hc": {
@@ -6178,8 +5985,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     },
 
     "_CR_ForeignTax_hc": {
@@ -6201,8 +6007,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     },
 
     "_CR_ResidentialEnergy_hc": {
@@ -6224,8 +6029,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     },
 
     "_CR_GeneralBusiness_hc": {
@@ -6247,8 +6051,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     },
 
     "_CR_MinimumTax_hc": {
@@ -6270,8 +6073,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     },
 
     "_CR_AmOppRefundable_hc": {
@@ -6293,8 +6095,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     },
 
     "_CR_AmOppNonRefundable_hc": {
@@ -6316,8 +6117,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     },
 
     "_CR_SchR_hc": {
@@ -6339,8 +6139,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     },
 
     "_CR_OtherCredits_hc": {
@@ -6362,8 +6161,7 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     },
 
     "_CR_Education_hc": {
@@ -6385,7 +6183,6 @@
         "range": {"min": 0, "max": 1},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": false}
+        "out_of_range_action": "stop"
     }
 }
