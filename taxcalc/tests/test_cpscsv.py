@@ -16,7 +16,6 @@ from __future__ import print_function
 import os
 import sys
 import json
-import pytest
 import numpy as np
 import pandas as pd
 # pylint: disable=import-error
@@ -127,7 +126,6 @@ def test_cps_availability(tests_path, cps_path):
     assert (recvars - cpsvars) == set()
 
 
-@pytest.mark.xfail
 def test_ubi_n_variables(cps_path):
     """
     Ensure that the three UBI n* variables add up to XTOT variable.
