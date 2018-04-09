@@ -2,7 +2,7 @@
 Tax-Calculator elasticity-based behavioral-response Behavior class.
 """
 # CODING-STYLE CHECKS:
-# pep8 --ignore=E402 behavior.py
+# pep8 behavior.py
 # pylint --disable=locally-disabled behavior.py
 
 from __future__ import print_function
@@ -246,7 +246,7 @@ class Behavior(ParametersBase):
             ltcg_chg = np.zeros(calc1.array_len)
         else:
             # calculate marginal tax rates on long-term capital gains
-            # (p23250 is filing units' long-term capital gains)
+            #  p23250 is filing units' long-term capital gains
             ltcg_mtr1, ltcg_mtr2 = Behavior._mtr12(calc1, calc2,
                                                    mtr_of='p23250',
                                                    tax_type='iitax')
@@ -262,8 +262,8 @@ class Behavior(ParametersBase):
             nc_charity_chg = np.zeros(calc1.array_len)
         else:
             # calculate marginal tax rate on charitable contributions
-            # e19800 is filing units' cash charitable contributions
-            # e20100 is filing units' non-cash charitable contributions
+            #  e19800 is filing units' cash charitable contributions and
+            #  e20100 is filing units' non-cash charitable contributions.
             # cash:
             c_charity_mtr1, c_charity_mtr2 = Behavior._mtr12(
                 calc1, calc2, mtr_of='e19800', tax_type='combined')
@@ -386,7 +386,7 @@ class Behavior(ParametersBase):
                     if val > 0.0:
                         raise ValueError(msg.format(param, pos, cyr, val))
                 elif param == '_BE_subinc_wrt_earnings':
-                    if val < 0 or val > 1:
+                    if not (val == 0 or val == 1):
                         raise ValueError(msg.format(param, nob, cyr, val))
                 elif param == '_BE_cg':
                     if val > 0.0:

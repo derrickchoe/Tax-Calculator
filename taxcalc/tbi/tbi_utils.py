@@ -2,19 +2,19 @@
 Private utility functions used only by public functions in the tbi.py file.
 """
 # CODING-STYLE CHECKS:
-# pep8 --ignore=E402 tbi_utils.py
+# pep8 tbi_utils.py
 # pylint --disable=locally-disabled tbi_utils.py
 
 from __future__ import print_function
 import os
 import time
-import copy
 import hashlib
 import numpy as np
 import pandas as pd
 from taxcalc import (Policy, Records, Calculator,
                      Consumption, Behavior, Growfactors, Growdiff)
-from taxcalc.utils import (add_income_bins, add_quantile_bins,
+from taxcalc.utils import (add_income_table_row_variable,
+                           add_quantile_table_row_variable,
                            create_difference_table, create_distribution_table,
                            DIST_VARIABLES, DIST_TABLE_COLUMNS,
                            STANDARD_INCOME_BINS, read_egg_csv)
@@ -136,10 +136,10 @@ def calculate(year_n, start_year,
 
     # create pre-reform Calculator instance
     if use_puf_not_cps:
-        recs1 = Records(data=copy.deepcopy(sample),
+        recs1 = Records(data=sample,
                         gfactors=growfactors_pre)
     else:
-        recs1 = Records.cps_constructor(data=copy.deepcopy(sample),
+        recs1 = Records.cps_constructor(data=sample,
                                         gfactors=growfactors_pre)
     policy1 = Policy(gfactors=growfactors_pre)
     calc1 = Calculator(policy=policy1, records=recs1, consumption=consump)
@@ -152,8 +152,7 @@ def calculate(year_n, start_year,
     res1 = calc1.dataframe(DIST_VARIABLES)
     if use_puf_not_cps:
         # create pre-reform Calculator instance with extra income
-        recs1p = Records(data=copy.deepcopy(sample),
-                         gfactors=growfactors_pre)
+        recs1p = Records(data=sample, gfactors=growfactors_pre)
         # add one dollar to the income of each filing unit to determine
         # which filing units undergo a resulting change in tax liability
         recs1p.e00200 += 1.0  # pylint: disable=no-member
@@ -174,9 +173,15 @@ def calculate(year_n, start_year,
             np.isclose(res1.iitax, res1p.iitax, atol=0.001, rtol=0.0)
         )
         assert np.any(mask)
-    else:  # if use_cps_not_cps is False
-        # indicate that no fuzzing of reform results is required
-        mask = np.zeros(res1.shape[0], dtype=np.int8)
+        # delete intermediate objects
+        del recs1p
+        del policy1p
+        del calc1p
+        del res1p
+    else:  # if use_puf_not_cps is False
+        # indicate that fuzzing of reform results is not required
+        mask = np.full(res1.shape, False)
+    del res1
 
     # specify Behavior instance
     behv = Behavior()
@@ -195,10 +200,10 @@ def calculate(year_n, start_year,
 
     # create post-reform Calculator instance
     if use_puf_not_cps:
-        recs2 = Records(data=copy.deepcopy(sample),
+        recs2 = Records(data=sample,
                         gfactors=growfactors_post)
     else:
-        recs2 = Records.cps_constructor(data=copy.deepcopy(sample),
+        recs2 = Records.cps_constructor(data=sample,
                                         gfactors=growfactors_post)
     policy2 = Policy(gfactors=growfactors_post)
     policy_reform = user_mods['policy']
@@ -207,8 +212,21 @@ def calculate(year_n, start_year,
                        consumption=consump, behavior=behv)
     while calc2.current_year < start_year:
         calc2.increment_year()
-    calc2.calc_all()
     assert calc2.current_year == start_year
+
+    # delete objects now embedded in calc1 and calc2
+    del sample
+    del full_sample
+    del consump
+    del growdiff_baseline
+    del growdiff_response
+    del growfactors_pre
+    del growfactors_post
+    del behv
+    del recs1
+    del recs2
+    del policy1
+    del policy2
 
     # increment Calculator objects for year_n years and calculate
     for _ in range(0, year_n):
@@ -328,12 +346,13 @@ def create_results_columns(df1, df2, mask):
         # pylint: disable=too-many-arguments
         assert bin_type == 'dec' or bin_type == 'bin' or bin_type == 'agg'
         if bin_type == 'dec':
-            df2 = add_quantile_bins(df2, imeasure, 10)
+            df2 = add_quantile_table_row_variable(df2, imeasure, 10)
         elif bin_type == 'bin':
-            df2 = add_income_bins(df2, imeasure, bins=STANDARD_INCOME_BINS)
+            df2 = add_income_table_row_variable(df2, imeasure,
+                                                bins=STANDARD_INCOME_BINS)
         else:
-            df2 = add_quantile_bins(df2, imeasure, 1)
-        gdf2 = df2.groupby('bins')
+            df2 = add_quantile_table_row_variable(df2, imeasure, 1)
+        gdf2 = df2.groupby('table_row')
         if do_fuzzing:
             df2['nofuzz'] = gdf2['mask'].transform(chooser)
         else:  # never do any results fuzzing
@@ -423,14 +442,13 @@ def summary(df1, df2, mask):
                                 income_measure='expanded_income',
                                 tax_to_diff='combined')
 
-    # create difference tables grouped by xbin (removing negative-income bin)
+    # create difference tables grouped by xbin
     df2['iitax'] = df2['iitax_xbin']
     diff_itax_xbin = \
         create_difference_table(df1, df2,
                                 groupby='standard_income_bins',
                                 income_measure='expanded_income',
                                 tax_to_diff='iitax')
-    diff_itax_xbin.drop(diff_itax_xbin.index[0], inplace=True)
     summ['diff_itax_xbin'] = diff_itax_xbin
 
     df2['payrolltax'] = df2['payrolltax_xbin']
@@ -439,7 +457,6 @@ def summary(df1, df2, mask):
                                 groupby='standard_income_bins',
                                 income_measure='expanded_income',
                                 tax_to_diff='payrolltax')
-    diff_ptax_xbin.drop(diff_ptax_xbin.index[0], inplace=True)
     summ['diff_ptax_xbin'] = diff_ptax_xbin
 
     df2['combined'] = df2['combined_xbin']
@@ -448,7 +465,6 @@ def summary(df1, df2, mask):
                                 groupby='standard_income_bins',
                                 income_measure='expanded_income',
                                 tax_to_diff='combined')
-    diff_comb_xbin.drop(diff_comb_xbin.index[0], inplace=True)
     summ['diff_comb_xbin'] = diff_comb_xbin
 
     # create distribution tables grouped by xdec
@@ -468,12 +484,11 @@ def summary(df1, df2, mask):
                                   income_measure='expanded_income_baseline',
                                   result_type='weighted_sum')
 
-    # create distribution tables grouped by xbin (removing negative-income bin)
+    # create distribution tables grouped by xbin
     dist1_xbin = \
         create_distribution_table(df1, groupby='standard_income_bins',
                                   income_measure='expanded_income',
                                   result_type='weighted_sum')
-    dist1_xbin.drop(dist1_xbin.index[0], inplace=True)
     summ['dist1_xbin'] = dist1_xbin
 
     suffix = '_xbin'
@@ -486,7 +501,6 @@ def summary(df1, df2, mask):
         create_distribution_table(df2, groupby='standard_income_bins',
                                   income_measure='expanded_income_baseline',
                                   result_type='weighted_sum')
-    dist2_xbin.drop(dist2_xbin.index[0], inplace=True)
     summ['dist2_xbin'] = dist2_xbin
 
     # return dictionary of summary results

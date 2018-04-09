@@ -7,7 +7,7 @@ leans heavily on py.tests's `parametrization` method. Once you do so, the
 plug-in pytest-xdist is able to run all parametrized functions in parallel
 """
 # CODING-STYLE CHECKS:
-# pep8 --ignore=E402 test_compatible_data.py
+# pep8 test_compatible_data.py
 # pylint --disable=locally-disabled test_compatible_data.py
 
 from __future__ import print_function
@@ -64,6 +64,7 @@ def test_compatible_data_presence(allparams):
         for pname in problem_pnames:
             print(msg.format(pname))
         assert 'list of problem_pnames' == 'empty list'
+
 
 XX_YEAR = 2019
 TEST_YEAR = 2020
@@ -138,6 +139,7 @@ def fixture_sorted_param_names(allparams):
     Fixture for storing a sorted parameter list
     """
     return sorted(list(allparams.keys()))
+
 
 NPARAMS = len(Policy.default_data())
 BATCHSIZE = 10

@@ -1,7 +1,15 @@
 You loaded data for 2014.
 Tax-Calculator startup automatically extrapolated your data to 2014.
+WARNING: Tax-Calculator packages for Python 2.7 will
+         no longer be provided beginning in 2019
+         because Pandas is stopping development for 2.7.
+SOLUTION: upgrade to Python 3.6 now.
 You loaded data for 2014.
 Tax-Calculator startup automatically extrapolated your data to 2014.
+WARNING: Tax-Calculator packages for Python 2.7 will
+         no longer be provided beginning in 2019
+         because Pandas is stopping development for 2.7.
+SOLUTION: upgrade to Python 3.6 now.
 
 REFORM DOCUMENTATION
 Baseline Growth-Difference Assumption Values by Year:
@@ -47,93 +55,93 @@ Policy Reform Parameter Values by Year:
         and above tax bracket 6.
   baseline_value: 0.37
 
-2020_CLP_itax_rev($B)= 1178.30
-2020_REF_itax_rev($B)= 1170.16
+2020_CLP_itax_rev($B)= 1273.15
+2020_REF_itax_rev($B)= 1264.11
 
 CLP diagnostic table:
                                      2020
 Returns (#m)                       174.51
-AGI ($b)                        10,957.82
-Itemizers (#m)                      30.33
-Itemized Deduction ($b)            855.21
-Standard Deduction Filers (#m)     125.68
-Standard Deduction ($b)          2,252.26
+AGI ($b)                        11,621.97
+Itemizers (#m)                      30.84
+Itemized Deduction ($b)            869.46
+Standard Deduction Filers (#m)     124.86
+Standard Deduction ($b)          2,238.71
 Personal Exemption ($b)              0.00
-Taxable Income ($b)              8,195.37
-Regular Tax ($b)                 1,364.44
-AMT Income ($b)                 10,356.83
-AMT Liability ($b)                   1.78
-AMT Filers (#m)                      0.45
-Tax before Credits ($b)          1,366.22
-Refundable Credits ($b)             96.03
-Nonrefundable Credits ($b)         101.09
+Taxable Income ($b)              8,775.43
+Regular Tax ($b)                 1,462.45
+AMT Income ($b)                 11,010.43
+AMT Liability ($b)                   1.87
+AMT Filers (#m)                      0.46
+Tax before Credits ($b)          1,464.32
+Refundable Credits ($b)             97.22
+Nonrefundable Credits ($b)         103.11
 Reform Surtaxes ($b)                 0.00
-Other Taxes ($b)                     9.20
-Ind Income Tax ($b)              1,178.30
-Payroll Taxes ($b)               1,300.25
-Combined Liability ($b)          2,478.55
-With Income Tax <= 0 (#m)           77.09
-With Combined Tax <= 0 (#m)         50.91
+Other Taxes ($b)                     9.16
+Ind Income Tax ($b)              1,273.15
+Payroll Taxes ($b)               1,300.24
+Combined Liability ($b)          2,573.39
+With Income Tax <= 0 (#m)           71.19
+With Combined Tax <= 0 (#m)         46.02
 
 REF diagnostic table:
                                      2020
 Returns (#m)                       174.51
-AGI ($b)                        10,957.82
-Itemizers (#m)                      30.16
-Itemized Deduction ($b)            850.47
-Standard Deduction Filers (#m)     125.84
-Standard Deduction ($b)          2,255.19
-Personal Exemption ($b)            303.70
-Taxable Income ($b)              7,960.03
-Regular Tax ($b)                 1,354.10
-AMT Income ($b)                 10,360.56
-AMT Liability ($b)                   1.74
+AGI ($b)                        11,621.97
+Itemizers (#m)                      30.76
+Itemized Deduction ($b)            867.24
+Standard Deduction Filers (#m)     124.93
+Standard Deduction ($b)          2,240.08
+Personal Exemption ($b)            303.11
+Taxable Income ($b)              8,531.41
+Regular Tax ($b)                 1,451.14
+AMT Income ($b)                 11,012.31
+AMT Liability ($b)                   1.85
 AMT Filers (#m)                      0.47
-Tax before Credits ($b)          1,355.84
-Refundable Credits ($b)             98.87
-Nonrefundable Credits ($b)          96.01
+Tax before Credits ($b)          1,452.99
+Refundable Credits ($b)            100.12
+Nonrefundable Credits ($b)          97.93
 Reform Surtaxes ($b)                 0.00
-Other Taxes ($b)                     9.20
-Ind Income Tax ($b)              1,170.16
-Payroll Taxes ($b)               1,300.25
-Combined Liability ($b)          2,470.42
-With Income Tax <= 0 (#m)           79.35
-With Combined Tax <= 0 (#m)         51.30
+Other Taxes ($b)                     9.16
+Ind Income Tax ($b)              1,264.11
+Payroll Taxes ($b)               1,300.24
+Combined Liability ($b)          2,564.35
+With Income Tax <= 0 (#m)           73.35
+With Combined Tax <= 0 (#m)         46.36
 
 Extract of 2020 distribution table by baseline expanded-income decile:
-    funits(#m)  itax1($b)  itax2($b)  aftertax_inc1($b)  aftertax_inc2($b)
-0        17.45      -8.02      -8.02              72.44              72.44
-1        17.45     -14.80     -15.32             320.94             321.47
-2        17.45     -11.13     -12.11             463.97             464.94
-3        17.45      -2.19      -3.64             596.79             598.23
-4        17.45       9.68       7.64             748.71             750.75
-5        17.45      29.95      26.76             934.72             937.92
-6        17.45      58.99      54.94           1,176.49           1,180.53
-7        17.45     101.44      96.61           1,500.69           1,505.51
-8        17.45     187.73     179.50           2,014.19           2,022.42
-9        17.45     826.65     843.80           4,113.39           4,096.24
-10      174.51   1,178.30   1,170.16          11,942.33          11,950.46
-11        8.73     178.31     173.73           1,371.04           1,375.62
-12        6.98     274.86     272.80           1,610.61           1,612.68
-13        1.75     373.47     397.27           1,131.74           1,107.94
-Note: deciles are numbered 0-9 with top decile divided into bottom 5%,
-      next 4%, and top 1%, in the lines numbered 11-13, respectively
+        funits(#m)  itax1($b)  itax2($b)  aftertax_inc1($b)  aftertax_inc2($b)
+0-10n         0.09       0.18       0.19             -25.54             -25.54
+0-10z         1.26       0.00       0.00               0.00               0.00
+0-10p        16.10      -8.48      -8.48             108.07             108.07
+10-20        17.45     -14.89     -15.49             334.60             335.20
+20-30        17.45     -11.14     -12.24             482.84             483.94
+30-40        17.45      -0.42      -2.01             624.66             626.25
+40-50        17.45      13.93      11.63             788.96             791.26
+50-60        17.45      38.24      34.66             990.30             993.88
+60-70        17.45      71.75      67.44           1,254.75           1,259.05
+70-80        17.45     117.00     111.61           1,610.79           1,616.18
+80-90        17.45     211.55     203.24           2,157.52           2,165.83
+90-100       17.45     855.42     873.55           4,322.37           4,304.24
+ALL         174.51   1,273.15   1,264.11          12,649.32          12,658.36
+90-95         8.73     190.58     186.17           1,462.16           1,466.57
+95-99         6.98     286.88     285.18           1,700.04           1,701.73
+Top 1%        1.75     377.96     402.19           1,160.17           1,135.94
 
 Extract of 2020 income-tax difference table by expanded-income decile:
-    funits(#m)  agg_diff($b)  mean_diff($)  aftertaxinc_diff(%)
-0        17.45         -0.00         -0.04                 0.00
-1        17.45         -0.52        -30.05                 0.16
-2        17.45         -0.98        -55.91                 0.21
-3        17.45         -1.45        -82.85                 0.24
-4        17.45         -2.04       -117.00                 0.27
-5        17.45         -3.19       -183.07                 0.34
-6        17.45         -4.05       -231.90                 0.34
-7        17.45         -4.82       -276.27                 0.32
-8        17.45         -8.23       -471.65                 0.41
-9        17.45         17.15        982.66                -0.42
-10      174.51         -8.13        -46.60                 0.07
-11        8.73         -4.58       -524.71                 0.33
-12        6.98         -2.07       -296.25                 0.13
-13        1.75         23.80     13,634.71                -2.10
-Note: deciles are numbered 0-9 with top decile divided into bottom 5%,
-      next 4%, and top 1%, in the lines numbered 11-13, respectively
+        funits(#m)  agg_diff($b)  mean_diff($)  aftertaxinc_diff(%)
+0-10n         0.09          0.01         94.10                 0.03
+0-10z         1.26          0.00          0.00                  nan
+0-10p        16.10         -0.00         -0.21                 0.00
+10-20        17.45         -0.60        -34.32                 0.18
+20-30        17.45         -1.10        -63.23                 0.23
+30-40        17.45         -1.59        -91.08                 0.25
+40-50        17.45         -2.30       -131.63                 0.29
+50-60        17.45         -3.58       -205.09                 0.36
+60-70        17.45         -4.31       -246.86                 0.34
+70-80        17.45         -5.39       -309.00                 0.33
+80-90        17.45         -8.31       -476.02                 0.39
+90-100       17.45         18.12      1,038.51                -0.42
+ALL         174.51         -9.05        -51.84                 0.07
+90-95         8.73         -4.41       -505.10                 0.30
+95-99         6.98         -1.70       -242.96                 0.10
+Top 1%        1.75         24.23     13,879.03                -2.09

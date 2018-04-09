@@ -2,12 +2,14 @@
 Tax-Calculator federal tax Calculator class.
 """
 # CODING-STYLE CHECKS:
-# pep8 --ignore=E402 calculate.py
+# pep8 calculate.py
 # pylint --disable=locally-disabled calculate.py
 #
 # pylint: disable=invalid-name,no-value-for-parameter,too-many-lines
 
+from __future__ import print_function
 import os
+import sys
 import json
 import re
 import copy
@@ -19,8 +21,8 @@ from taxcalc.functions import (TaxInc, SchXYZTax, GainsTax, AGIsurtax,
                                DependentCare, ALD_InvInc_ec_base, CapGains,
                                SSBenefits, UBI, AGI, ItemDedCap, ItemDed,
                                StdDed, AdditionalMedicareTax, F2441, EITC,
-                               SchR, ChildTaxCredit, AdditionalCTC, CTC_new,
-                               PersonalTaxCredit,
+                               ChildDepTaxCredit, AdditionalCTC, CTC_new,
+                               PersonalTaxCredit, SchR,
                                AmOppCreditParts, EducationTaxCredit,
                                NonrefundableCredits, C1040, IITAX,
                                BenefitSurtax, BenefitLimitation,
@@ -38,8 +40,7 @@ from taxcalc.utils import (DIST_VARIABLES, create_distribution_table,
                            ce_aftertax_expanded_income,
                            mtr_graph_data, atr_graph_data, xtr_graph_plot,
                            dec_graph_data, dec_graph_plot,
-                           pch_graph_data, pch_graph_plot,
-                           qin_graph_data, qin_graph_plot)
+                           pch_graph_data, pch_graph_plot)
 # import pdb
 
 
@@ -147,6 +148,11 @@ class Calculator(object):
                 print('Tax-Calculator startup automatically ' +
                       'extrapolated your data to ' +
                       str(self.__records.current_year) + '.')
+        if verbose and sys.version_info.major == 2:  # running Python 2.7
+            print('WARNING: Tax-Calculator packages for Python 2.7 will')
+            print('         no longer be provided beginning in 2019')
+            print('         because Pandas is stopping development for 2.7.')
+            print('SOLUTION: upgrade to Python 3.6 now.')
         assert self.__policy.current_year == self.__records.current_year
         self.__stored_records = None
 
@@ -209,20 +215,42 @@ class Calculator(object):
         """
         assert isinstance(variable_list, list)
         arys = [self.array(vname) for vname in variable_list]
-        return pd.DataFrame(data=np.column_stack(arys), columns=variable_list)
+        pdf = pd.DataFrame(data=np.column_stack(arys), columns=variable_list)
+        del arys
+        return pdf
+
+    def distribution_table_dataframe(self):
+        """
+        Return pandas DataFrame containing the DIST_TABLE_COLUMNS variables
+        from embedded Records object.
+        """
+        pdf = self.dataframe(DIST_VARIABLES)
+        # revise itemized deduction amount to include only those with AGI>0
+        pdf['c04470'][:] = pdf['c04470'].where(
+            ((pdf['c00100'] > 0.) & (pdf['c04470'] > pdf['standard'])), 0.)
+        # weighted count of itemizer returns among those with AGI>0
+        pdf['num_returns_ItemDed'] = pdf['s006'].where(
+            ((pdf['c00100'] > 0.) & (pdf['c04470'] > 0.)), 0.)
+        # weighted count of standard-deduction returns among those with AGI>0
+        pdf['num_returns_StandardDed'] = pdf['s006'].where(
+            ((pdf['c00100'] > 0.) & (pdf['standard'] > 0.)), 0.)
+        # weight count of returns with positive Alternative Minimum Tax (AMT)
+        pdf['num_returns_AMT'] = pdf['s006'].where(pdf['c09600'] > 0., 0.)
+        return pdf
 
     def array(self, variable_name, variable_value=None):
         """
         If variable_value is None, return numpy ndarray containing the
          named variable in embedded Records object.
         If variable_value is not None, set named variable in embedded Records
-         object to specified variable_value.
+         object to specified variable_value and return None (which can be
+         ignored).
         """
         if variable_value is None:
             return getattr(self.__records, variable_name)
-        else:
-            assert isinstance(variable_value, np.ndarray)
-            setattr(self.__records, variable_name, variable_value)
+        assert isinstance(variable_value, np.ndarray)
+        setattr(self.__records, variable_name, variable_value)
+        return None
 
     def incarray(self, variable_name, variable_add):
         """
@@ -254,18 +282,20 @@ class Calculator(object):
         """
         assert isinstance(self.__stored_records, Records)
         self.__records = copy.deepcopy(self.__stored_records)
+        del self.__stored_records
         self.__stored_records = None
 
     def records_current_year(self, year=None):
         """
         If year is None, return current_year of embedded Records object.
-        If year is not None, set embedded Records current_year to year.
+        If year is not None, set embedded Records current_year to year and
+         return None (which can be ignored).
         """
         if year is None:
             return self.__records.current_year
-        else:
-            assert isinstance(year, int)
-            self.__records.set_current_year(year)
+        assert isinstance(year, int)
+        self.__records.set_current_year(year)
+        return None
 
     @property
     def array_len(self):
@@ -274,17 +304,18 @@ class Calculator(object):
         """
         return self.__records.array_length
 
-    def param(self, param_name, param_value=None):
+    def policy_param(self, param_name, param_value=None):
         """
         If param_value is None, return named parameter in
          embedded Policy object.
         If param_value is not None, set named parameter in
-         embedded Policy object to specified param_value.
+         embedded Policy object to specified param_value and
+         return None (which can be ignored).
         """
         if param_value is None:
             return getattr(self.__policy, param_name)
-        else:
-            setattr(self.__policy, param_name, param_value)
+        setattr(self.__policy, param_name, param_value)
+        return None
 
     def consump_param(self, param_name):
         """
@@ -311,12 +342,13 @@ class Calculator(object):
         If param_value is None, return named parameter in
          embedded Behavior object.
         If param_value is not None, set named parameter in
-         embedded Behavior object to specified param_value.
+         embedded Behavior object to specified param_value and
+         return None (which can be ignored).
         """
         if param_value is None:
             return getattr(self.__behavior, param_name)
-        else:
-            setattr(self.__behavior, param_name, param_value)
+        setattr(self.__behavior, param_name, param_value)
+        return None
 
     def records_include_behavioral_responses(self):
         """
@@ -334,13 +366,14 @@ class Calculator(object):
     def policy_current_year(self, year=None):
         """
         If year is None, return current_year of embedded Policy object.
-        If year is not None, set embedded Policy current_year to year.
+        If year is not None, set embedded Policy current_year to year and
+         return None (which can be ignored).
         """
         if year is None:
             return self.__policy.current_year
-        else:
-            assert isinstance(year, int)
-            self.__policy.set_year(year)
+        assert isinstance(year, int)
+        self.__policy.set_year(year)
+        return None
 
     @property
     def current_year(self):
@@ -375,16 +408,20 @@ class Calculator(object):
         assert num_years >= 1
         max_num_years = self.__policy.end_year - self.__policy.current_year + 1
         assert num_years <= max_num_years
+        diag_variables = DIST_VARIABLES + ['surtax']
         calc = copy.deepcopy(self)
         tlist = list()
         for iyr in range(1, num_years + 1):
             assert calc.behavior_has_response() is False
             calc.calc_all()
-            diag = create_diagnostic_table(calc.dataframe(DIST_VARIABLES),
+            diag = create_diagnostic_table(calc.dataframe(diag_variables),
                                            calc.current_year)
             tlist.append(diag)
             if iyr < num_years:
                 calc.increment_year()
+        del diag_variables
+        del calc
+        del diag
         return pd.concat(tlist, axis=1)
 
     def distribution_tables(self, calc,
@@ -393,14 +430,12 @@ class Calculator(object):
                             result_type='weighted_sum'):
         """
         Get results from self and calc, sort them based on groupby using
-        income_measure, manipulate grouped statistics based on result_type,
+        income_measure, compute grouped statistics based on result_type,
         and return tables as a pair of Pandas dataframes.
         This method leaves the Calculator object(s) unchanged.
         Note that the returned tables have consistent income groups (based
         on the self income_measure) even though the baseline income_measure
         in self and the income_measure in calc are different.
-        Also, note that some subgroups may contain filing units with negative
-        or zero baseline (self) income.
 
         Parameters
         ----------
@@ -409,29 +444,37 @@ class Calculator(object):
             if calc is None, the second returned table is None
 
         groupby : String object
-            options for input: 'weighted_deciles', 'webapp_income_bins',
+            options for input: 'weighted_deciles', 'standard_income_bins',
                                'large_income_bins', 'small_income_bins';
-            determines how the columns in returned tables are sorted
-        NOTE: when groupby is 'weighted_deciles', the returned table has three
-              extra rows containing top-decile detail consisting of statistics
-              for the 0.90-0.95 quantile range (bottom half of top decile),
-              for the 0.95-0.99 quantile range, and
-              for the 0.99-1.00 quantile range (top one percent).
+            determines how the columns in resulting Pandas DataFrame are sorted
 
         income_measure : String object
             options for input: 'expanded_income' or 'c00100'(AGI)
+            specifies statistic used to place filing units in bins or deciles
 
         result_type : String object
             options for input: 'weighted_sum' or 'weighted_avg';
-            determines how whether or not table entries are averages or totals
+            determines how the table statistices are computed
 
-        Typical usage
-        -------------
+        Return and typical usage
+        ------------------------
         dist1, dist2 = calc1.distribution_tables(calc2)
         OR
         dist1, _ = calc1.distribution_tables(None)
         (where calc1 is a baseline Calculator object
-        and calc2 is a reform Calculator object)
+        and calc2 is a reform Calculator object).
+        Each of the dist1 and optional dist2 is a distribution table as a
+        Pandas DataFrame with DIST_TABLE_COLUMNS and groupby rows.
+        NOTE: when groupby is 'weighted_deciles', the returned tables have 3
+              extra rows containing top-decile detail consisting of statistics
+              for the 0.90-0.95 quantile range (bottom half of top decile),
+              for the 0.95-0.99 quantile range, and
+              for the 0.99-1.00 quantile range (top one percent); and the
+              returned table splits the bottom decile into filing units with
+              negative (denoted by a 0-10n row label),
+              zero (denoted by a 0-10z row label), and
+              positive (denoted by a 0-10p row label) values of the
+              specified income_measure.
         """
         # nested function used only by this method
         def have_same_income_measure(calc1, calc2, income_measure):
@@ -446,17 +489,19 @@ class Calculator(object):
         # main logic of method
         assert calc is None or isinstance(calc, Calculator)
         assert (groupby == 'weighted_deciles' or
-                groupby == 'webapp_income_bins' or
+                groupby == 'standard_income_bins' or
                 groupby == 'large_income_bins' or
                 groupby == 'small_income_bins')
         assert (income_measure == 'expanded_income' or
                 income_measure == 'c00100')
         assert (result_type == 'weighted_sum' or
                 result_type == 'weighted_avg')
-        dt1 = create_distribution_table(self.dataframe(DIST_VARIABLES),
+        var_dataframe = self.distribution_table_dataframe()
+        dt1 = create_distribution_table(var_dataframe,
                                         groupby=groupby,
                                         income_measure=income_measure,
                                         result_type=result_type)
+        del var_dataframe
         if calc is None:
             dt2 = None
         else:
@@ -465,7 +510,7 @@ class Calculator(object):
             if income_measure == 'expanded_income':
                 assert np.allclose(self.consump_benval_params(),
                                    calc.consump_benval_params())
-            var_dataframe = calc.dataframe(DIST_VARIABLES)
+            var_dataframe = calc.distribution_table_dataframe()
             if have_same_income_measure(self, calc, income_measure):
                 imeasure = income_measure
             else:
@@ -475,6 +520,7 @@ class Calculator(object):
                                             groupby=groupby,
                                             income_measure=imeasure,
                                             result_type=result_type)
+            del var_dataframe
         return dt1, dt2
 
     def difference_table(self, calc,
@@ -490,8 +536,6 @@ class Calculator(object):
         in self and the income_measure in calc are different.
         Note that filing units are put into groupby categories using the
         specified income_measure in the baseline (self) situation.
-        Also, note that some subgroups may contain filing units with negative
-        or zero baseline (self) income.
 
         Parameters
         ----------
@@ -499,27 +543,35 @@ class Calculator(object):
             calc represents the reform while self represents the baseline
 
         groupby : String object
-            options for input: 'weighted_deciles', 'webapp_income_bins',
+            options for input: 'weighted_deciles', 'standard_income_bins',
                                'large_income_bins', 'small_income_bins';
-            determines how the columns in returned tables are sorted
-        NOTE: when groupby is 'weighted_deciles', the returned table has three
-              extra rows containing top-decile detail consisting of statistics
-              for the 0.90-0.95 quantile range (bottom half of top decile),
-              for the 0.95-0.99 quantile range, and
-              for the 0.99-1.00 quantile range (top one percent).
+            determines how the columns in resulting Pandas DataFrame are sorted
 
         income_measure : String object
             options for input: 'expanded_income' or 'c00100'(AGI)
+            specifies statistic used to place filing units in bins or deciles
 
         tax_to_diff : String object
             options for input: 'iitax', 'payrolltax', 'combined'
             specifies which tax to difference
 
-        Typical usage
-        -------------
+        Returns and typical usage
+        -------------------------
         diff = calc1.difference_table(calc2)
         (where calc1 is a baseline Calculator object
-        and calc2 is a reform Calculator object)
+        and calc2 is a reform Calculator object).
+        The returned diff is a difference table as a Pandas DataFrame
+        with DIST_TABLE_COLUMNS and groupby rows.
+        NOTE: when groupby is 'weighted_deciles', the returned table has three
+              extra rows containing top-decile detail consisting of statistics
+              for the 0.90-0.95 quantile range (bottom half of top decile),
+              for the 0.95-0.99 quantile range, and
+              for the 0.99-1.00 quantile range (top one percent); and the
+              returned table splits the bottom decile into filing units with
+              negative (denoted by a 0-10n row label),
+              zero (denoted by a 0-10z row label), and
+              positive (denoted by a 0-10p row label) values of the
+              specified income_measure.
         """
         assert isinstance(calc, Calculator)
         assert calc.current_year == self.current_year
@@ -527,11 +579,15 @@ class Calculator(object):
         if income_measure == 'expanded_income':
             assert np.allclose(self.consump_benval_params(),
                                calc.consump_benval_params())
-        diff = create_difference_table(self.dataframe(DIFF_VARIABLES),
-                                       calc.dataframe(DIFF_VARIABLES),
+        self_var_dataframe = self.dataframe(DIFF_VARIABLES)
+        calc_var_dataframe = calc.dataframe(DIFF_VARIABLES)
+        diff = create_difference_table(self_var_dataframe,
+                                       calc_var_dataframe,
                                        groupby=groupby,
                                        income_measure=income_measure,
                                        tax_to_diff=tax_to_diff)
+        del self_var_dataframe
+        del calc_var_dataframe
         return diff
 
     MTR_VALID_VARIABLES = ['e00200p', 'e00200s',
@@ -688,10 +744,10 @@ class Calculator(object):
         mtr_on_earnings = (variable_str == 'e00200p' or
                            variable_str == 'e00200s')
         if wrt_full_compensation and mtr_on_earnings:
-            adj = np.where(variable < self.param('SS_Earnings_c'),
-                           0.5 * (self.param('FICA_ss_trt') +
-                                  self.param('FICA_mc_trt')),
-                           0.5 * self.param('FICA_mc_trt'))
+            adj = np.where(variable < self.policy_param('SS_Earnings_c'),
+                           0.5 * (self.policy_param('FICA_ss_trt') +
+                                  self.policy_param('FICA_mc_trt')),
+                           0.5 * self.policy_param('FICA_mc_trt'))
         else:
             adj = 0.0
         # compute marginal tax rates
@@ -704,6 +760,26 @@ class Calculator(object):
             mtr_payrolltax = np.where(mars == 2, mtr_payrolltax, np.nan)
             mtr_incometax = np.where(mars == 2, mtr_incometax, np.nan)
             mtr_combined = np.where(mars == 2, mtr_combined, np.nan)
+        # delete intermediate variables
+        del variable
+        if variable_str == 'e00200p' or variable_str == 'e00200s':
+            del earnings_var
+        elif variable_str == 'e00900p':
+            del seincome_var
+        elif variable_str == 'e00650':
+            del divincome_var
+        elif variable_str == 'e26270':
+            del schEincome_var
+        del payrolltax_chng
+        del incometax_chng
+        del combined_taxes_chng
+        del payrolltax_base
+        del incometax_base
+        del combined_taxes_base
+        del payrolltax_diff
+        del incometax_diff
+        del combined_diff
+        del adj
         # return the three marginal tax rate arrays
         return (mtr_payrolltax, mtr_incometax, mtr_combined)
 
@@ -770,9 +846,8 @@ class Calculator(object):
 
             - 'agi': adjusted gross income, AGI (c00100)
 
-            - 'expanded_income': sum of AGI, non-taxable interest income,
-              non-taxable social security benefits, and employer share of
-              FICA taxes.
+            - 'expanded_income': broader than AGI (see definition in
+                                 functions.py file).
 
         dollar_weighting : boolean
             False implies both income_measure percentiles on x axis
@@ -846,6 +921,17 @@ class Calculator(object):
                               mtr_wrt_full_compen=mtr_wrt_full_compen,
                               income_measure=income_measure,
                               dollar_weighting=dollar_weighting)
+        # delete intermediate variables
+        del vdf
+        del mtr1_ptax
+        del mtr1_itax
+        del mtr1_combined
+        del mtr1
+        del mtr2_ptax
+        del mtr2_itax
+        del mtr2_combined
+        del mtr2
+        del record_variables
         # construct figure from data
         fig = xtr_graph_plot(data,
                              width=850,
@@ -854,6 +940,7 @@ class Calculator(object):
                              ylabel='',
                              title='',
                              legendloc='bottom_right')
+        del data
         return fig
 
     def atr_graph(self, calc,
@@ -935,6 +1022,9 @@ class Calculator(object):
                               year=self.current_year,
                               mars=mars,
                               atr_measure=atr_measure)
+        # delete intermediate variables
+        del vdf
+        del record_variables
         # construct figure from data
         fig = xtr_graph_plot(data,
                              width=850,
@@ -943,6 +1033,7 @@ class Calculator(object):
                              ylabel='',
                              title='',
                              legendloc='bottom_right')
+        del data
         return fig
 
     def pch_graph(self, calc):
@@ -982,6 +1073,9 @@ class Calculator(object):
         vdf['chg_aftinc'] = vdf2['aftertax_income'] - vdf1['aftertax_income']
         # construct data for graph
         data = pch_graph_data(vdf, year=self.current_year)
+        del vdf
+        del vdf1
+        del vdf2
         # construct figure from data
         fig = pch_graph_plot(data,
                              width=850,
@@ -989,9 +1083,12 @@ class Calculator(object):
                              xlabel='',
                              ylabel='',
                              title='')
+        del data
         return fig
 
-    def decile_graph(self, calc, set_bottom_decile_result_to_zero=True):
+    def decile_graph(self, calc,
+                     include_zero_incomes=True,
+                     include_negative_incomes=True):
         """
         Create graph that shows percentage change in aftertax expanded
         income (from going from policy in self to policy in calc) for
@@ -1001,8 +1098,9 @@ class Calculator(object):
         immediately in an interactive or notebook session (following
         the instructions in the documentation of the xtr_graph_plot
         utility function).
-        Note that some deciles may contain filing units with negative
-        or zero baseline (self) expanded income.
+        NOTE: this method calls the distribution_tables method to
+              compute the values of the graphed statistic; consult
+              that method for details on how the values are computed.
 
         Parameters
         ----------
@@ -1011,11 +1109,17 @@ class Calculator(object):
             where both self and calc have calculated taxes for this year
             before being used by this method
 
-        set_bottom_decile_result_to_zero : boolean
-            specify whether or not bottom decile (which contains filing
-            units with non-positive expanded income) result is shown in the
-            graph (default value is True; set to False to show the bottom
-            decile result)
+        include_zero_incomes : boolean
+            if True (which is the default), the bottom decile does contain
+            filing units with zero expanded_income;
+            if False, the bottom decile does not contain filing units with
+            zero expanded_income.
+
+        include_negative_incomes : boolean
+            if True (which is the default), the bottom decile does contain
+            filing units with negative expanded_income;
+            if False, the bottom decile does not contain filing units with
+            negative expanded_income.
 
         Returns
         -------
@@ -1025,14 +1129,15 @@ class Calculator(object):
         assert isinstance(calc, Calculator)
         assert calc.current_year == self.current_year
         assert calc.array_len == self.array_len
-        diff_table = self.difference_table(calc,
-                                           groupby='weighted_deciles',
-                                           income_measure='expanded_income',
-                                           tax_to_diff='combined')
+        dt1, dt2 = self.distribution_tables(calc,
+                                            groupby='weighted_deciles',
+                                            income_measure='expanded_income',
+                                            result_type='weighted_sum')
         # construct data for graph
-        data = dec_graph_data(diff_table, year=self.current_year)
-        if set_bottom_decile_result_to_zero:
-            data['bars'][0]['value'] = 0
+        data = dec_graph_data(
+            dt1, dt2, year=self.current_year,
+            include_zero_incomes=include_zero_incomes,
+            include_negative_incomes=include_negative_incomes)
         # construct figure from data
         fig = dec_graph_plot(data,
                              width=850,
@@ -1040,56 +1145,9 @@ class Calculator(object):
                              xlabel='',
                              ylabel='',
                              title='')
-        return fig
-
-    def quintile_graph(self, calc, set_bottom_quintile_result_to_zero=True):
-        """Create graph that shows percentage change in aftertax expanded
-        income (from going from policy in self to policy in calc) for
-        each expanded-income quintile and subgroups of the top quintile.
-        The graph can be written to an HTML file (using the
-        write_graph_file utility function) or shown on the screen
-        immediately in an interactive or notebook session (following
-        the instructions in the documentation of the xtr_graph_plot
-        utility function).
-        Note that some quintiles may contain filing units with negative
-        or zero baseline (self) expanded income.
-
-        Parameters
-        ----------
-        calc : Calculator object
-            calc represents the reform while self represents the baseline,
-            where both self and calc have calculated taxes for this year
-            before being used by this method
-
-        set_bottom_quintile_result_to_zero : boolean
-            specify whether or not bottom quintile (which contains filing
-            units with non-positive expanded income) result is shown in the
-            graph (default value is True; set to False to show the bottom
-            quintile result)
-
-        Returns
-        -------
-        graph that is a bokeh.plotting figure object
-        """
-        # check that two Calculator objects are comparable
-        assert isinstance(calc, Calculator)
-        assert calc.current_year == self.current_year
-        assert calc.array_len == self.array_len
-        diff_table = self.difference_table(calc,
-                                           groupby='weighted_deciles',
-                                           income_measure='expanded_income',
-                                           tax_to_diff='combined')
-        # construct data for graph
-        data = qin_graph_data(diff_table, year=self.current_year)
-        if set_bottom_quintile_result_to_zero:
-            data['bars'][0]['value'] = 0
-        # construct figure from data
-        fig = qin_graph_plot(data,
-                             width=850,
-                             height=500,
-                             xlabel='',
-                             ylabel='',
-                             title='')
+        del data
+        del dt1
+        del dt2
         return fig
 
     @staticmethod
@@ -1444,7 +1502,7 @@ class Calculator(object):
         self._taxinc_to_amt()
         F2441(self.__policy, self.__records)
         EITC(self.__policy, self.__records)
-        ChildTaxCredit(self.__policy, self.__records)
+        ChildDepTaxCredit(self.__policy, self.__records)
         PersonalTaxCredit(self.__policy, self.__records)
         AmOppCreditParts(self.__policy, self.__records)
         SchR(self.__policy, self.__records)
