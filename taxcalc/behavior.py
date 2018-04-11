@@ -2,7 +2,7 @@
 Tax-Calculator elasticity-based behavioral-response Behavior class.
 """
 # CODING-STYLE CHECKS:
-# pep8 --ignore=E402 behavior.py
+# pep8 behavior.py
 # pylint --disable=locally-disabled behavior.py
 
 from __future__ import print_function
@@ -109,7 +109,7 @@ class Behavior(ParametersBase):
         return False
 
     @staticmethod
-    def response(calc1, calc2, trace=False):
+    def response(calc1, calc2, mtr_cap=0.99, trace=False):
         """
         Implements TaxBrain "Partial Equilibrium Simulation" dynamic analysis.
 
@@ -169,6 +169,9 @@ class Behavior(ParametersBase):
         # begin main logic of response
         assert calc1.array_len == calc2.array_len
         assert calc1.current_year == calc2.current_year
+        assert mtr_cap >= 0.95 and mtr_cap < 1.0
+        if trace:
+            print('*** TRACE *** mtr_cap={}'.format(mtr_cap))
         # calculate sum of substitution and income effects
         if calc2.behavior.BE_sub == 0.0 and calc2.behavior.BE_inc == 0.0:
             zero_sub_and_inc = True
@@ -184,9 +187,8 @@ class Behavior(ParametersBase):
                 sub = np.zeros(calc1.array_len)
             else:
                 # proportional change in marginal net-of-tax rates on earnings
-                nearone = 0.999999
-                mtr1 = np.where(wage_mtr1 > nearone, nearone, wage_mtr1)
-                mtr2 = np.where(wage_mtr2 > nearone, nearone, wage_mtr2)
+                mtr1 = np.where(wage_mtr1 > mtr_cap, mtr_cap, wage_mtr1)
+                mtr2 = np.where(wage_mtr2 > mtr_cap, mtr_cap, wage_mtr2)
                 pch = ((1. - mtr2) / (1. - mtr1)) - 1.
                 if calc2.behavior.BE_subinc_wrt_earnings:
                     # Note: e00200 is filing unit's wages+salaries
@@ -195,6 +197,16 @@ class Behavior(ParametersBase):
                     # Note: c04800 is filing unit's taxable income
                     sub = calc2.behavior.BE_sub * pch * calc1.array('c04800')
                     if trace:
+                        trace_output('wmtr1', wage_mtr1,
+                                     [-9e99, 0.00, 0.25, 0.50, 0.60,
+                                      0.70, 0.80, 0.90, 0.999999, 1.1,
+                                      1.2, 1.3, 9e99],
+                                     calc1.array('s006'),
+                                     np.zeros(calc1.array_len))
+                        print('high wage_mtr1:',
+                              wage_mtr1[wage_mtr1 > 0.999999])
+                        print('wage_mtr2 them:',
+                              wage_mtr2[wage_mtr1 > 0.999999])
                         trace_output('pch', pch,
                                      [-9e99, -1.00, -0.50, -0.20, -0.10,
                                       -0.00001, 0.00001,
@@ -231,7 +243,7 @@ class Behavior(ParametersBase):
             ltcg_chg = np.zeros(calc1.array_len)
         else:
             # calculate marginal tax rates on long-term capital gains
-            # (p23250 is filing units' long-term capital gains)
+            #  p23250 is filing units' long-term capital gains
             ltcg_mtr1, ltcg_mtr2 = Behavior._mtr12(calc1, calc2,
                                                    mtr_of='p23250',
                                                    tax_type='iitax')
@@ -247,16 +259,24 @@ class Behavior(ParametersBase):
             nc_charity_chg = np.zeros(calc1.array_len)
         else:
             # calculate marginal tax rate on charitable contributions
-            # e19800 is filing units' cash charitable contributions
-            # e20100 is filing units' non-cash charitable contributions
+            #  e19800 is filing units' cash charitable contributions and
+            #  e20100 is filing units' non-cash charitable contributions.
             # cash:
             c_charity_mtr1, c_charity_mtr2 = Behavior._mtr12(
                 calc1, calc2, mtr_of='e19800', tax_type='combined')
+            c_charity_mtr1 = np.where(c_charity_mtr1 > mtr_cap,
+                                      mtr_cap, c_charity_mtr1)
+            c_charity_mtr2 = np.where(c_charity_mtr2 > mtr_cap,
+                                      mtr_cap, c_charity_mtr2)
             c_charity_price_pch = (((1. + c_charity_mtr2) /
                                     (1. + c_charity_mtr1)) - 1.)
             # non-cash:
             nc_charity_mtr1, nc_charity_mtr2 = Behavior._mtr12(
                 calc1, calc2, mtr_of='e20100', tax_type='combined')
+            nc_charity_mtr1 = np.where(nc_charity_mtr1 > mtr_cap,
+                                       mtr_cap, nc_charity_mtr1)
+            nc_charity_mtr2 = np.where(nc_charity_mtr2 > mtr_cap,
+                                       mtr_cap, nc_charity_mtr2)
             nc_charity_price_pch = (((1. + nc_charity_mtr2) /
                                      (1. + nc_charity_mtr1)) - 1.)
             # identify income bin based on baseline income
@@ -319,6 +339,7 @@ class Behavior(ParametersBase):
                                               calc2_behv)
         # Recalculate post-reform taxes incorporating behavioral responses
         calc2_behv.calc_all()
+        calc2_behv.records_include_behavioral_responses()
         return calc2_behv
 
     # ----- begin private methods of Behavior class -----
@@ -362,7 +383,7 @@ class Behavior(ParametersBase):
                     if val > 0.0:
                         raise ValueError(msg.format(param, pos, cyr, val))
                 elif param == '_BE_subinc_wrt_earnings':
-                    if val < 0 or val > 1:
+                    if not (val == 0 or val == 1):
                         raise ValueError(msg.format(param, nob, cyr, val))
                 elif param == '_BE_cg':
                     if val > 0.0:

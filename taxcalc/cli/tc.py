@@ -3,18 +3,18 @@ Command-line interface (CLI) to Tax-Calculator,
 which can be accessed as 'tc' from an installed taxcalc conda package.
 """
 # CODING-STYLE CHECKS:
-# pep8 --ignore=E402 tc.py
+# pep8 tc.py
 # pylint --disable=locally-disabled tc.py
 
 import os
 import sys
 import argparse
 import difflib
-from taxcalc import TaxCalcIO
+import taxcalc as tc
 
 
 TEST_INPUT_FILENAME = 'test.csv'
-TEST_TAXYEAR = 2017
+TEST_TAXYEAR = 2018
 
 
 def cli_tc_main():
@@ -23,12 +23,14 @@ def cli_tc_main():
     """
     # pylint: disable=too-many-statements
     # parse command-line arguments:
-    usage_str = 'tc INPUT TAXYEAR {}{}{}{}{}'.format(
+    usage_str = 'tc INPUT TAXYEAR {}{}{}{}{}{}{}'.format(
+        '[--baseline BASELINE]\n',
+        '          ',
         '[--reform REFORM] [--assump  ASSUMP]\n',
         '          ',
         '[--exact] [--tables] [--graphs] [--ceeu] [--dump] [--sqldb]\n',
         '          ',
-        '[--outdir] [--test]')
+        '[--outdir] [--test] [--version] [--help]')
     parser = argparse.ArgumentParser(
         prog='',
         usage=usage_str,
@@ -37,7 +39,7 @@ def cli_tc_main():
                      'file, with the OUTPUT computed from the INPUT for the '
                      'TAXYEAR using Tax-Calculator. The OUTPUT file is a '
                      'CSV-formatted file that contains tax information for '
-                     'each INPUT filing unit under the reform.'))
+                     'each INPUT filing unit under the reform(s).'))
     parser.add_argument('INPUT', nargs='?',
                         help=('INPUT is name of CSV-formatted file that '
                               'contains for each filing unit variables used '
@@ -50,8 +52,15 @@ def cli_tc_main():
                               'are computed.'),
                         type=int,
                         default=0)
+    parser.add_argument('--baseline',
+                        help=('BASELINE is name of optional JSON reform file. '
+                              'No --baseline implies baseline policy is '
+                              'current-law policy.'),
+                        default=None)
     parser.add_argument('--reform',
                         help=('REFORM is name of optional JSON reform file. '
+                              'A compound reform can be specified using two '
+                              'file names separated by a plus (+) character. '
                               'No --reform implies a "null" reform (that is, '
                               'current-law policy).'),
                         default=None)
@@ -82,7 +91,7 @@ def cli_tc_main():
                               'expected-utility (ceeu) of after-tax income '
                               'values for different '
                               'constant-relative-risk-aversion parameter '
-                              'values, to be written to screen.'),
+                              'values, to be written to stdout.'),
                         default=False,
                         action="store_true")
     parser.add_argument('--dump',
@@ -118,10 +127,20 @@ def cli_tc_main():
                         default=None)
     parser.add_argument('--test',
                         help=('optional flag that conducts installation '
-                              'test.'),
+                              'test, writes test result to stdout, '
+                              'and quits.'),
+                        default=False,
+                        action="store_true")
+    parser.add_argument('--version',
+                        help=('optional flag that writes Tax-Calculator '
+                              'release version to stdout and quits.'),
                         default=False,
                         action="store_true")
     args = parser.parse_args()
+    # show Tsx-Calculator version and quit if --version option specified
+    if args.version:
+        sys.stdout.write('Tax-Calculator {}\n'.format(tc.__version__))
+        return 0
     # write test input and expected output files if --test option specified
     if args.test:
         _write_expected_test_output()
@@ -131,15 +150,17 @@ def cli_tc_main():
         inputfn = args.INPUT
         taxyear = args.TAXYEAR
     # instantiate taxcalcio object and do tax analysis
-    tcio = TaxCalcIO(input_data=inputfn, tax_year=taxyear,
-                     reform=args.reform, assump=args.assump,
-                     outdir=args.outdir)
+    tcio = tc.TaxCalcIO(input_data=inputfn, tax_year=taxyear,
+                        baseline=args.baseline,
+                        reform=args.reform, assump=args.assump,
+                        outdir=args.outdir)
     if tcio.errmsg:
         sys.stderr.write(tcio.errmsg)
         sys.stderr.write('USAGE: tc --help\n')
         return 1
     aging = inputfn.endswith('puf.csv') or inputfn.endswith('cps.csv')
     tcio.init(input_data=inputfn, tax_year=taxyear,
+              baseline=args.baseline,
               reform=args.reform, assump=args.assump,
               growdiff_response=None,
               aging_input_data=aging,
@@ -181,7 +202,7 @@ def cli_tc_main():
 
 
 EXPECTED_TEST_OUTPUT_FILENAME = 'test-{}-out.csv'.format(str(TEST_TAXYEAR)[2:])
-ACTUAL_TEST_OUTPUT_FILENAME = 'test-{}-#-#.csv'.format(str(TEST_TAXYEAR)[2:])
+ACTUAL_TEST_OUTPUT_FILENAME = 'test-{}-#-#-#.csv'.format(str(TEST_TAXYEAR)[2:])
 
 
 def _write_expected_test_output():
@@ -197,8 +218,8 @@ def _write_expected_test_output():
         ifile.write(input_data)
     expected_output_data = (
         'RECID,YEAR,WEIGHT,INCTAX,LSTAX,PAYTAX\n'
-        '1,2017,0.00,682.99,0.00,6120.00\n'
-        '2,2017,0.00,29690.00,0.00,21572.80\n'
+        '1,2018,0.00,123.51,0.00,6120.00\n'
+        '2,2018,0.00,28879.00,0.00,22167.43\n'
     )
     with open(EXPECTED_TEST_OUTPUT_FILENAME, 'w') as ofile:
         ofile.write(expected_output_data)

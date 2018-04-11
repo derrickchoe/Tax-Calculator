@@ -2,7 +2,7 @@
 Tax-Calculator tax-filing-unit Records class.
 """
 # CODING-STYLE CHECKS:
-# pep8 --ignore=E402 records.py
+# pep8 records.py
 # pylint --disable=locally-disabled records.py
 
 import os
@@ -34,7 +34,8 @@ class Records(object):
         default value is false.
 
     gfactors: Growfactors class instance or None
-        containing record data extrapolation (or "blowup") factors
+        containing record data extrapolation (or "blowup") factors.
+        NOTE: the constructor should never call the _blowup() method.
 
     weights: string or Pandas DataFrame or None
         string describes CSV file in which weights reside;
@@ -96,15 +97,16 @@ class Records(object):
     # suppress pylint warnings about too many class instance attributes:
     # pylint: disable=too-many-instance-attributes
 
-    PUFCSV_YEAR = 2009
+    PUFCSV_YEAR = 2011
     CPSCSV_YEAR = 2014
 
     CUR_PATH = os.path.abspath(os.path.dirname(__file__))
-    PUF_WEIGHTS_FILENAME = 'puf_weights.csv'
+    PUF_WEIGHTS_FILENAME = 'puf_weights.csv.gz'
     PUF_RATIOS_FILENAME = 'puf_ratios.csv'
     CPS_WEIGHTS_FILENAME = 'cps_weights.csv.gz'
     CPS_RATIOS_FILENAME = None
     VAR_INFO_FILENAME = 'records_variables.json'
+    CPS_BENEFITS_FILENAME = 'cps_benefits.csv.gz'
 
     def __init__(self,
                  data='puf.csv',
@@ -112,8 +114,9 @@ class Records(object):
                  gfactors=Growfactors(),
                  weights=PUF_WEIGHTS_FILENAME,
                  adjust_ratios=PUF_RATIOS_FILENAME,
+                 benefits=None,
                  start_year=PUFCSV_YEAR):
-        # pylint: disable=too-many-arguments
+        # pylint: disable=too-many-arguments,too-many-locals
         self.__data_year = start_year
         # read specified data
         self._read_data(data, exact_calculations)
@@ -135,6 +138,14 @@ class Records(object):
                            rtol=0.0, atol=tol):
             msg = 'expression "e00600 >= e00650" is not true for every record'
             raise ValueError(msg)
+        del other_dividends
+        # check that total pension income is no less than taxable pension inc
+        nontaxable_pensions = np.maximum(0., self.e01500 - self.e01700)
+        if not np.allclose(self.e01500, self.e01700 + nontaxable_pensions,
+                           rtol=0.0, atol=tol):
+            msg = 'expression "e01500 >= e01700" is not true for every record'
+            raise ValueError(msg)
+        del nontaxable_pensions
         # handle grow factors
         is_correct_type = isinstance(gfactors, Growfactors)
         if gfactors is not None and not is_correct_type:
@@ -146,6 +157,9 @@ class Records(object):
         self._read_weights(weights)
         self.ADJ = None
         self._read_ratios(adjust_ratios)
+        # read extrapolated benefit variables
+        self.BEN = None
+        self._read_benefits(benefits)
         # weights must be same size as tax record data
         if not self.WT.empty and self.array_length != len(self.WT):
             # scale-up sub-sample weights by year-specific factor
@@ -153,7 +167,7 @@ class Records(object):
             self.WT = self.WT.iloc[self.__index]
             sum_sub_weights = self.WT.sum()
             factor = sum_full_weights / sum_sub_weights
-            self.WT = self.WT * factor
+            self.WT *= factor
         # specify current_year and FLPDYR values
         if isinstance(start_year, int):
             self.__current_year = start_year
@@ -161,13 +175,12 @@ class Records(object):
         else:
             msg = 'start_year is not an integer'
             raise ValueError(msg)
-        # consider applying initial-year grow factors
-        if gfactors is not None and start_year == self.__data_year:
-            self._blowup(start_year)
         # construct sample weights for current_year
         wt_colname = 'WT{}'.format(self.current_year)
         if wt_colname in self.WT.columns:
             self.s006 = self.WT[wt_colname] * 0.01
+        # specify that variable values do not include behavioral responses
+        self.behavioral_responses_are_included = False
 
     @staticmethod
     def cps_constructor(data=None,
@@ -190,6 +203,7 @@ class Records(object):
                        gfactors=gfactors,
                        weights=Records.CPS_WEIGHTS_FILENAME,
                        adjust_ratios=Records.CPS_RATIOS_FILENAME,
+                       benefits=Records.CPS_BENEFITS_FILENAME,
                        start_year=Records.CPSCSV_YEAR)
 
     @property
@@ -218,6 +232,9 @@ class Records(object):
         Add one to current year.
         Also, does extrapolation, reweighting, adjusting for new current year.
         """
+        # no incrementing Records object that includes behavioral responses
+        assert self.behavioral_responses_are_included is False
+        # move to next year
         self.__current_year += 1
         # apply variable extrapolation grow factors
         if self.gfactors is not None:
@@ -226,9 +243,12 @@ class Records(object):
         self._adjust(self.__current_year)
         # specify current-year sample weights
         if self.WT is not None:
-            wt_colname = 'WT{}'.format(self.current_year)
+            wt_colname = 'WT{}'.format(self.__current_year)
             if wt_colname in self.WT.columns:
                 self.s006 = self.WT[wt_colname] * 0.01
+        # extrapolate benefit values
+        if self.BEN.size > 0:
+            self._extrapolate_benefits(self.current_year)
 
     def set_current_year(self, new_current_year):
         """
@@ -369,7 +389,6 @@ class Records(object):
         self.e24515 *= ACGNS
         self.e24518 *= ACGNS
         # SCHEDULE E
-        self.p25470 *= ASCHEI
         self.e26270 *= ASCHEI
         self.e27200 *= ASCHEI
         self.k1bx14p *= ASCHEI
@@ -380,7 +399,7 @@ class Records(object):
         self.e58990 *= ATXPY
         self.e62900 *= ATXPY
         self.e87530 *= ATXPY
-        self.p87521 *= ATXPY
+        self.e87521 *= ATXPY
         self.cmbtp *= ATXPY
 
     def _adjust(self, year):
@@ -390,8 +409,21 @@ class Records(object):
         """
         if self.ADJ.size > 0:
             # Interest income
-            adj_array = self.ADJ['INT{}'.format(year)][self.agi_bin].values
-            self.e00300 *= adj_array
+            self.e00300 *= self.ADJ['INT{}'.format(year)][self.agi_bin].values
+
+    def _extrapolate_benefits(self, year):
+        """
+        Extrapolate benefit variables
+        """
+        setattr(self, 'housing_ben', self.BEN['housing_{}'.format(year)])
+        setattr(self, 'ssi_ben', self.BEN['ssi_{}'.format(year)])
+        setattr(self, 'snap_ben', self.BEN['snap_{}'.format(year)])
+        setattr(self, 'tanf_ben', self.BEN['tanf_{}'.format(year)])
+        setattr(self, 'vet_ben', self.BEN['vet_{}'.format(year)])
+        setattr(self, 'wic_ben', self.BEN['wic_{}'.format(year)])
+        setattr(self, 'mcare_ben', self.BEN['mcare_{}'.format(year)])
+        setattr(self, 'mcaid_ben', self.BEN['mcaid_{}'.format(year)])
+        self.other_ben *= self.gfactors.factor_value('ABENEFITS', year)
 
     def _read_data(self, data, exact_calcs):
         """
@@ -433,6 +465,8 @@ class Records(object):
         if not Records.MUST_READ_VARS.issubset(READ_VARS):
             msg = 'Records data missing one or more MUST_READ_VARS'
             raise ValueError(msg)
+        # delete intermediate taxdf object
+        del taxdf
         # create other class variables that are set to all zeros
         UNREAD_VARS = Records.USABLE_READ_VARS - READ_VARS
         ZEROED_VARS = Records.CALCULATED_VARS | UNREAD_VARS
@@ -460,16 +494,17 @@ class Records(object):
         for varname in Records.CHANGING_CALCULATED_VARS:
             var = getattr(self, varname)
             var.fill(0.)
+        del var
 
     def _read_weights(self, weights):
         """
         Read Records weights from file or
         use specified DataFrame as data or
         create empty DataFrame if None.
+        Assumes weights are integers equal to 100 times the real weight.
         """
         if weights is None:
-            WT = pd.DataFrame({'nothing': []})
-            setattr(self, 'WT', WT)
+            setattr(self, 'WT', pd.DataFrame({'nothing': []}))
             return
         if isinstance(weights, pd.DataFrame):
             WT = weights
@@ -485,20 +520,18 @@ class Records(object):
             msg = 'weights is not None or a string or a Pandas DataFrame'
             raise ValueError(msg)
         assert isinstance(WT, pd.DataFrame)
-        setattr(self, 'WT', WT.astype(np.float64))
+        setattr(self, 'WT', WT.astype(np.int32))
+        del WT
 
     def _read_ratios(self, ratios):
         """
-        Read Records adjustment ratios from file or uses specified DataFrame
-        as data or creates empty DataFrame if None
+        Read Records adjustment ratios from file or
+        create empty DataFrame if None
         """
         if ratios is None:
-            ADJ = pd.DataFrame({'nothing': []})
-            setattr(self, 'ADJ', ADJ)
+            setattr(self, 'ADJ', pd.DataFrame({'nothing': []}))
             return
-        if isinstance(ratios, pd.DataFrame):
-            ADJ = ratios
-        elif isinstance(ratios, six.string_types):
+        if isinstance(ratios, six.string_types):
             ratios_path = os.path.join(Records.CUR_PATH, ratios)
             if os.path.isfile(ratios_path):
                 ADJ = pd.read_csv(ratios_path,
@@ -507,12 +540,50 @@ class Records(object):
                 # cannot call read_egg_ function in unit tests
                 ADJ = read_egg_csv(os.path.basename(ratios_path),
                                    index_col=0)  # pragma: no cover
-            ADJ = ADJ.transpose()
         else:
-            msg = ('adjust_ratios is not None or a string'
-                   'or a Pandas DataFrame')
+            msg = 'ratios is neither None nor a string'
             raise ValueError(msg)
         assert isinstance(ADJ, pd.DataFrame)
+        ADJ = ADJ.transpose()
         if ADJ.index.name != 'agi_bin':
             ADJ.index.name = 'agi_bin'
-        self.ADJ = ADJ
+        self.ADJ = pd.DataFrame()
+        setattr(self, 'ADJ', ADJ.astype(np.float32))
+        del ADJ
+
+    def _read_benefits(self, benefits):
+        """
+        Read Records extrapolated benefits from a file or uses a specified
+        DataFrame or creates an empty DataFrame if None. Should only be
+        used with the cps.csv file
+        """
+        if benefits is None:
+            setattr(self, 'BEN', pd.DataFrame({'Nothing': []}))
+            return
+        if isinstance(benefits, pd.DataFrame):
+            BEN_partial = benefits
+        elif isinstance(benefits, six.string_types):
+            benefits_path = os.path.join(Records.CUR_PATH, benefits)
+            if os.path.isfile(benefits_path):
+                BEN_partial = pd.read_csv(benefits_path)
+            else:
+                # cannot call read_egg_ function in unit tests
+                b_path = os.path.basename(benefits_path)  # pragma: no cover
+                BEN_partial = read_egg_csv(b_path)  # pragma: no cover
+        else:
+            msg = 'benefits is not Nont or a string or a Pandas DataFrame'
+            raise ValueError(msg)
+        assert isinstance(BEN_partial, pd.DataFrame)
+        # expand benefits DataFrame to include those who don't receive benefits
+        recid_df = pd.DataFrame({'RECID': self.RECID})
+        # merge benefits with DataFrame of RECID
+        full_df = recid_df.merge(BEN_partial, on='RECID', how='left')
+        # fill missing values
+        full_df.fillna(0, inplace=True)
+        assert len(recid_df) == len(full_df)
+        self.BEN = pd.DataFrame()
+        setattr(self, 'BEN', full_df.astype(np.float32))
+        # delete intermediate DataFrame objects
+        del full_df
+        del recid_df
+        del BEN_partial

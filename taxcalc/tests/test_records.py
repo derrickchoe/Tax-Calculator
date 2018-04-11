@@ -1,3 +1,6 @@
+# CODING-STYLE CHECKS:
+# pep8 test_records.py
+
 import os
 import json
 import numpy as np
@@ -21,6 +24,9 @@ def test_incorrect_Records_instantiation(cps_subsample):
     with pytest.raises(ValueError):
         recs = Records(data=cps_subsample, gfactors=None, weights=None,
                        adjust_ratios=list())
+    with pytest.raises(ValueError):
+        recs = Records(data=cps_subsample, gfactors=None, weights=None,
+                       adjust_ratios=None, benefits=list())
 
 
 def test_correct_Records_instantiation(cps_subsample):
@@ -34,14 +40,15 @@ def test_correct_Records_instantiation(cps_subsample):
     assert sum_e00200_in_cps_year_plus_one == sum_e00200_in_cps_year
     wghts_path = os.path.join(Records.CUR_PATH, Records.CPS_WEIGHTS_FILENAME)
     wghts_df = pd.read_csv(wghts_path)
-    ratio_path = os.path.join(Records.CUR_PATH, Records.PUF_RATIOS_FILENAME)
-    ratio_df = pd.read_csv(ratio_path)
-    ratio_df = ratio_df.transpose()
+    benefit_path = os.path.join(Records.CUR_PATH,
+                                Records.CPS_BENEFITS_FILENAME)
+    benefit_df = pd.read_csv(benefit_path)
     rec2 = Records(data=cps_subsample,
                    exact_calculations=False,
                    gfactors=Growfactors(),
                    weights=wghts_df,
-                   adjust_ratios=ratio_df,
+                   adjust_ratios=None,
+                   benefits=benefit_df,
                    start_year=Records.CPSCSV_YEAR)
     assert rec2
     assert np.all(rec2.MARS != 0)
@@ -76,6 +83,10 @@ def test_correct_Records_instantiation(cps_subsample):
     (
         u'RECID,MARS,e00600,e00650\n'
         u'1,    1,        8,     9\n'
+    ),
+    (
+        u'RECID,MARS,e01500,e01700\n'
+        u'1,    1,        6,     7\n'
     )
 ])
 def test_read_data(csv):
@@ -144,8 +155,14 @@ def test_records_variables_content(tests_path):
                 else:
                     indefinite_yrange = False
                     eyr = int(yrlist[1])
-                    assert fyr == prior_eyr + 1
-                    assert eyr <= last_form_year
+                    if fyr != (prior_eyr + 1):
+                        msg1 = '{} fyr {}'.format(vname, fyr)
+                        msg2 = '!= prior_eyr_1 {}'.format(prior_eyr + 1)
+                        assert msg1 == msg2
+                    if eyr > last_form_year:
+                        msg1 = '{} eyr {}'.format(vname, eyr)
+                        msg2 = '> last_form_year {}'.format(last_form_year)
+                        assert msg1 == msg2
                     prior_eyr = eyr
             if not indefinite_yrange and len(yranges) > 0:
                 assert prior_eyr == last_form_year

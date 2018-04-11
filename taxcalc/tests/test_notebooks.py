@@ -1,3 +1,6 @@
+# CODING-STYLE CHECKS:
+# pep8 test_notebooks.py
+
 import os
 import json
 import subprocess
@@ -21,6 +24,7 @@ def notebook_run(test_path, notebook_path):
 
 @pytest.mark.notebook
 @pytest.mark.requires_pufcsv
+@pytest.mark.skip
 def test_10minutes_notebook(tests_path):
     notebook_path = os.path.join(tests_path, '..', '..',
                                  'read-the-docs', 'notebooks',

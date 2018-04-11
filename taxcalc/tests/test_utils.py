@@ -2,11 +2,12 @@
 Tests of Tax-Calculator utility functions.
 """
 # CODING-STYLE CHECKS:
-# pep8 --ignore=E402 test_utils.py
+# pep8 test_utils.py
 # pylint --disable=locally-disabled test_utils.py
 #
 # pylint: disable=missing-docstring,no-member,protected-access,too-many-lines
 
+from __future__ import print_function
 import os
 import math
 import random
@@ -19,14 +20,16 @@ from taxcalc.utils import (DIST_VARIABLES,
                            DIST_TABLE_COLUMNS, DIST_TABLE_LABELS,
                            DIFF_VARIABLES,
                            DIFF_TABLE_COLUMNS, DIFF_TABLE_LABELS,
+                           SMALL_INCOME_BINS, LARGE_INCOME_BINS,
                            create_distribution_table, create_difference_table,
                            weighted_count_lt_zero, weighted_count_gt_zero,
                            weighted_count, weighted_sum, weighted_mean,
                            wage_weighted, agi_weighted,
                            expanded_income_weighted,
                            weighted_perc_inc, weighted_perc_cut,
-                           add_income_bins, add_quantile_bins,
-                           mtr_graph_data, atr_graph_data,
+                           add_income_table_row_variable,
+                           add_quantile_table_row_variable,
+                           mtr_graph_data, atr_graph_data, dec_graph_data,
                            xtr_graph_plot, write_graph_file,
                            read_egg_csv, read_egg_json, delete_file,
                            bootstrap_se_ci,
@@ -58,11 +61,16 @@ DATA_FLOAT = [[1.0, 2, 'a'],
 
 def test_validity_of_name_lists():
     assert len(DIST_TABLE_COLUMNS) == len(DIST_TABLE_LABELS)
+    Records.read_var_info()
     assert set(DIST_VARIABLES).issubset(Records.CALCULATED_VARS | {'s006'})
+    extra_vars_set = set(['num_returns_StandardDed',
+                          'num_returns_ItemDed',
+                          'num_returns_AMT'])
+    assert (set(DIST_TABLE_COLUMNS) - set(DIST_VARIABLES)) == extra_vars_set
 
 
 def test_create_tables(cps_subsample):
-    # pylint: disable=too-many-statements
+    # pylint: disable=too-many-statements,too-many-branches
     # create a current-law Policy object and Calculator object calc1
     rec = Records.cps_constructor(data=cps_subsample)
     pol = Policy()
@@ -74,6 +82,8 @@ def test_create_tables(cps_subsample):
     calc2 = Calculator(policy=pol, records=rec)
     calc2.calc_all()
 
+    test_failure = False
+
     # test creating various difference tables
 
     diff = create_difference_table(calc1.dataframe(DIFF_VARIABLES),
@@ -82,41 +92,53 @@ def test_create_tables(cps_subsample):
                                    income_measure='expanded_income',
                                    tax_to_diff='combined')
     assert isinstance(diff, pd.DataFrame)
-    expected = [0.00,
-                0.01,
-                0.41,
-                0.76,
-                0.85,
-                1.06,
-                1.14,
-                1.04,
-                0.76,
-                0.19,
-                0.70]
-    assert np.allclose(diff['perc_aftertax'].values, expected,
-                       atol=0.005, rtol=0.0, equal_nan=True)
+    expected = [np.nan,
+                np.nan,
+                -0.16,
+                -0.57,
+                -0.72,
+                -0.69,
+                -0.82,
+                -0.80,
+                -0.75,
+                -0.65,
+                -0.18,
+                -0.59]
+    tabcol = 'pc_aftertaxinc'
+    if not np.allclose(diff[tabcol].values, expected,
+                       atol=0.005, rtol=0.0, equal_nan=True):
+        test_failure = True
+        print('diff', tabcol)
+        for val in diff[tabcol].values:
+            print('{:.2f},'.format(val))
 
     diff = create_difference_table(calc1.dataframe(DIFF_VARIABLES),
                                    calc2.dataframe(DIFF_VARIABLES),
-                                   groupby='webapp_income_bins',
+                                   groupby='standard_income_bins',
                                    income_measure='expanded_income',
                                    tax_to_diff='iitax')
     assert isinstance(diff, pd.DataFrame)
-    expected = [0.00,
-                0.01,
-                0.41,
-                0.76,
-                0.85,
-                1.06,
-                1.14,
-                1.04,
-                0.76,
-                0.26,
-                0.08,
-                0.06,
-                0.70]
-    assert np.allclose(diff['perc_aftertax'].values, expected,
-                       atol=0.005, rtol=0.0, equal_nan=True)
+    expected = [np.nan,
+                np.nan,
+                -0.16,
+                -0.57,
+                -0.72,
+                -0.69,
+                -0.82,
+                -0.80,
+                -0.75,
+                -0.65,
+                -0.23,
+                -0.09,
+                -0.06,
+                -0.59]
+    tabcol = 'pc_aftertaxinc'
+    if not np.allclose(diff[tabcol].values, expected,
+                       atol=0.005, rtol=0.0, equal_nan=True):
+        test_failure = True
+        print('diff', tabcol)
+        for val in diff[tabcol].values:
+            print('{:.2f},'.format(val))
 
     diff = create_difference_table(calc1.dataframe(DIFF_VARIABLES),
                                    calc2.dataframe(DIFF_VARIABLES),
@@ -124,28 +146,34 @@ def test_create_tables(cps_subsample):
                                    income_measure='expanded_income',
                                    tax_to_diff='iitax')
     assert isinstance(diff, pd.DataFrame)
-    expected = [0.00,
-                0.01,
-                0.02,
-                0.15,
-                0.58,
-                0.73,
-                0.78,
-                0.85,
-                1.06,
-                1.14,
-                1.04,
-                0.76,
-                0.26,
-                0.08,
-                0.08,
-                0.07,
-                0.04,
-                0.02,
+    expected = [np.nan,
                 np.nan,
-                0.70]
-    assert np.allclose(diff['perc_aftertax'].values, expected,
-                       atol=0.005, rtol=0.0, equal_nan=True)
+                -0.30,
+                -0.10,
+                -0.24,
+                -0.76,
+                -0.67,
+                -0.75,
+                -0.69,
+                -0.82,
+                -0.80,
+                -0.75,
+                -0.65,
+                -0.23,
+                -0.09,
+                -0.08,
+                -0.07,
+                -0.05,
+                -0.02,
+                np.nan,
+                -0.59]
+    tabcol = 'pc_aftertaxinc'
+    if not np.allclose(diff[tabcol].values, expected,
+                       atol=0.005, rtol=0.0, equal_nan=True):
+        test_failure = True
+        print('diff', tabcol)
+        for val in diff[tabcol].values:
+            print('{:.2f},'.format(val))
 
     diff = create_difference_table(calc1.dataframe(DIFF_VARIABLES),
                                    calc2.dataframe(DIFF_VARIABLES),
@@ -153,179 +181,249 @@ def test_create_tables(cps_subsample):
                                    income_measure='expanded_income',
                                    tax_to_diff='combined')
     assert isinstance(diff, pd.DataFrame)
-    expected = [14931,
-                276555,
-                7728872,
-                22552703,
-                34008512,
-                50233787,
-                76811377,
-                111167087,
-                123226970,
-                111414038,
-                537434832,
-                66560891,
-                39571078,
-                5282069]
-    assert np.allclose(diff['tot_change'].values, expected,
-                       atol=0.5, rtol=0.0)
+    expected = [0,
+                0,
+                1219678,
+                15503037,
+                25922077,
+                35000592,
+                48336897,
+                62637728,
+                79750078,
+                93136108,
+                116996252,
+                102458801,
+                580961247,
+                62524760,
+                34296230,
+                5637811]
+    tabcol = 'tot_change'
+    if not np.allclose(diff[tabcol].values, expected,
+                       atol=0.51, rtol=0.0):
+        test_failure = True
+        print('diff', tabcol)
+        for val in diff[tabcol].values:
+            print('{:.0f},'.format(val))
     expected = [0.00,
-                0.05,
-                1.44,
-                4.20,
-                6.33,
-                9.35,
-                14.29,
-                20.68,
-                22.93,
-                20.73,
+                0.00,
+                0.21,
+                2.67,
+                4.46,
+                6.02,
+                8.32,
+                10.78,
+                13.73,
+                16.03,
+                20.14,
+                17.64,
                 100.00,
-                12.38,
-                7.36,
-                0.98]
-    assert np.allclose(diff['share_of_change'].values, expected,
-                       atol=0.005, rtol=0.0)
-    expected = [0.01,
-                0.02,
-                0.33,
-                0.70,
-                0.81,
-                0.91,
-                1.07,
-                1.18,
-                0.91,
-                0.37,
-                0.70,
-                0.69,
-                0.34,
-                0.06]
-    assert np.allclose(diff['perc_aftertax'].values, expected,
-                       atol=0.005, rtol=0.0, equal_nan=True)
-    expected = [-0.01,
-                -0.02,
-                -0.33,
+                10.76,
+                5.90,
+                0.97]
+    tabcol = 'share_of_change'
+    if not np.allclose(diff[tabcol].values, expected,
+                       atol=0.005, rtol=0.0):
+        test_failure = True
+        print('diff', tabcol)
+        for val in diff[tabcol].values:
+            print('{:.2f},'.format(val))
+    expected = [np.nan,
+                np.nan,
+                -0.15,
+                -0.62,
                 -0.70,
-                -0.81,
-                -0.91,
-                -1.07,
-                -1.18,
-                -0.91,
-                -0.37,
-                -0.70,
-                -0.69,
-                -0.34,
+                -0.73,
+                -0.78,
+                -0.80,
+                -0.80,
+                -0.74,
+                -0.71,
+                -0.30,
+                -0.59,
+                -0.55,
+                -0.25,
                 -0.06]
-    assert np.allclose(diff['pc_aftertaxinc'].values, expected,
-                       atol=0.005, rtol=0.0, equal_nan=True)
+    tabcol = 'pc_aftertaxinc'
+    if not np.allclose(diff[tabcol].values, expected,
+                       atol=0.005, rtol=0.0, equal_nan=True):
+        test_failure = True
+        print('diff', tabcol)
+        for val in diff[tabcol].values:
+            print('{:.2f},'.format(val))
+    expected = [np.nan,
+                np.nan,
+                -0.15,
+                -0.62,
+                -0.70,
+                -0.73,
+                -0.78,
+                -0.80,
+                -0.80,
+                -0.74,
+                -0.71,
+                -0.30,
+                -0.59,
+                -0.55,
+                -0.25,
+                -0.06]
+    tabcol = 'pc_aftertaxinc'
+    if not np.allclose(diff[tabcol].values, expected,
+                       atol=0.005, rtol=0.0, equal_nan=True):
+        test_failure = True
+        print('diff', tabcol)
+        for val in diff[tabcol].values:
+            print('{:.2f},'.format(val))
 
     # test creating various distribution tables
 
-    dist = create_distribution_table(calc2.dataframe(DIST_VARIABLES),
+    dist = create_distribution_table(calc2.distribution_table_dataframe(),
                                      groupby='weighted_deciles',
                                      income_measure='expanded_income',
                                      result_type='weighted_sum')
     assert isinstance(dist, pd.DataFrame)
+    expected = [0,
+                0,
+                -53644343,
+                -65258622,
+                -57617119,
+                37391333,
+                200879230,
+                329784586,
+                553827330,
+                1015854407,
+                1731283600,
+                7090603505,
+                10783103907,
+                1619214423,
+                2229272486,
+                3242116596]
+    tabcol = 'iitax'
+    if not np.allclose(dist[tabcol].values, expected,
+                       atol=0.5, rtol=0.0):
+        test_failure = True
+        print('dist', tabcol)
+        for val in dist[tabcol].values:
+            print('{:.0f},'.format(val))
+    expected = [0,
+                0,
+                2561,
+                12610,
+                21936,
+                29172,
+                50890,
+                61563,
+                78247,
+                91823,
+                118523,
+                128886,
+                596211,
+                63290,
+                52259,
+                13337]
+    tabcol = 'num_returns_ItemDed'
+    if not np.allclose(dist[tabcol].tolist(), expected,
+                       atol=0.5, rtol=0.0):
+        test_failure = True
+        print('dist', tabcol)
+        for val in dist[tabcol].values:
+            print('{:.0f},'.format(val))
+    expected = [0,
+                0,
+                835224673,
+                2639667638,
+                3940559051,
+                5286856071,
+                6972849344,
+                8881099529,
+                11467767759,
+                14761195525,
+                19832126806,
+                44213000235,
+                118830346631,
+                14255710430,
+                16985739736,
+                12971550069]
+    tabcol = 'expanded_income'
+    if not np.allclose(dist[tabcol].tolist(), expected,
+                       atol=0.5, rtol=0.0):
+        test_failure = True
+        print('dist', tabcol)
+        for val in dist[tabcol].values:
+            print('{:.0f},'.format(val))
+    expected = [0,
+                0,
+                818813684,
+                2466000535,
+                3671150517,
+                4790979126,
+                6173998985,
+                7754183496,
+                9907604744,
+                12510477225,
+                16273592612,
+                33915377411,
+                98282178334,
+                11241322851,
+                13483478786,
+                9190575773]
+    tabcol = 'aftertax_income'
+    if not np.allclose(dist[tabcol].tolist(), expected,
+                       atol=0.5, rtol=0.0):
+        test_failure = True
+        print('dist', tabcol)
+        for val in dist[tabcol].values:
+            print('{:.0f},'.format(val))
 
-    expected = [-8851215,
-                -99666120,
-                -123316561,
-                -85895787,
-                -47357458,
-                207462144,
-                443391189,
-                978487989,
-                1709504845,
-                7631268907,
-                10605027933,
-                1655597977,
-                2537684742,
-                3437986189]
-    assert np.allclose(dist['iitax'].values, expected,
-                       atol=0.5, rtol=0.0)
-    expected = [1202,
-                1688,
-                13506,
-                18019,
-                30130,
-                48244,
-                80994,
-                112788,
-                131260,
-                146001,
-                583832,
-                70258,
-                59834,
-                15909]
-    assert np.allclose(dist['num_returns_ItemDed'].tolist(), expected,
-                       atol=0.5, rtol=0.0)
-    expected = [158456013,
-                1351981790,
-                2383726863,
-                3408544081,
-                4569232020,
-                6321944661,
-                8520304098,
-                11817197884,
-                17299173380,
-                41117720202,
-                96948280992,
-                12723790026,
-                15769741079,
-                12624189098]
-    assert np.allclose(dist['expanded_income'].tolist(), expected,
-                       atol=0.5, rtol=0.0)
-    expected = [147367698,
-                1354827269,
-                2351611947,
-                3192405234,
-                4157431713,
-                5454468907,
-                7125788590,
-                9335613303,
-                13417244946,
-                29691084873,
-                76227844481,
-                9546216325,
-                11603328920,
-                8541539628]
-    assert np.allclose(dist['aftertax_income'].tolist(), expected,
-                       atol=0.5, rtol=0.0)
-
-    dist = create_distribution_table(calc2.dataframe(DIST_VARIABLES),
-                                     groupby='webapp_income_bins',
+    dist = create_distribution_table(calc2.distribution_table_dataframe(),
+                                     groupby='standard_income_bins',
                                      income_measure='expanded_income',
                                      result_type='weighted_sum')
     assert isinstance(dist, pd.DataFrame)
-    expected = [-103274,
-                -83144506,
-                -152523834,
-                -129881470,
-                85802556,
-                255480678,
-                832529135,
-                1066963515,
-                3023956558,
-                2876331264,
-                1008672459,
-                1820944852,
-                10605027933]
-    assert np.allclose(dist['iitax'], expected,
-                       atol=0.5, rtol=0.0)
     expected = [0,
+                0,
+                -42244205,
+                -76727831,
+                -62581860,
+                53797887,
+                217016689,
+                723516183,
+                1108097059,
+                3272479928,
+                2818979541,
+                950296405,
+                1820474110,
+                10783103907]
+    tabcol = 'iitax'
+    if not np.allclose(dist[tabcol], expected,
+                       atol=0.5, rtol=0.0):
+        test_failure = True
+        print('dist', tabcol)
+        for val in dist[tabcol].values:
+            print('{:.0f},'.format(val))
+    expected = [0,
+                0,
                 1202,
-                22654,
-                31665,
-                30547,
-                49851,
-                124786,
-                97349,
-                160147,
-                56806,
-                5803,
-                3023,
-                583832]
-    assert np.allclose(dist['num_returns_ItemDed'].tolist(), expected,
-                       atol=0.5, rtol=0.0)
+                13614,
+                27272,
+                34407,
+                48265,
+                117225,
+                103319,
+                181885,
+                61014,
+                5126,
+                2882,
+                596211]
+    tabcol = 'num_returns_ItemDed'
+    if not np.allclose(dist[tabcol].tolist(), expected,
+                       atol=0.5, rtol=0.0):
+        test_failure = True
+        print('dist', tabcol)
+        for val in dist[tabcol].values:
+            print('{:.0f},'.format(val))
+
+    if test_failure:
+        assert 1 == 2
 
 
 def test_diff_count_precision():
@@ -352,7 +450,7 @@ def test_diff_count_precision():
     9   61733 <--- largest unweighted bin count
     A  215525
 
-    WEBAPP BINS:
+    STANDARD BINS:
     0    7081 <--- negative income bin is dropped in TaxBrain display
     1   19355
     2   22722
@@ -369,27 +467,27 @@ def test_diff_count_precision():
 
     Background information on Trump2017.json reform used in TaxBrain run 16649:
 
-    WEBAPP bin 10 ($500-1000 thousand) has weighted count of 1179 thousand;
-                  weighted count of units with tax increase is 32 thousand.
+    STANDARD bin 10 ($500-1000 thousand) has weighted count of 1179 thousand;
+                    weighted count of units with tax increase is 32 thousand.
 
-    So, the mean weight for all units in WEBAPP bin 10 is 111.5421 and the
+    So, the mean weight for all units in STANDARD bin 10 is 111.5421 and the
     unweighted number with a tax increase is 287 assuming all units in that
     bin have the same weight.  (Note that 287 * 111.5421 is about 32,012.58,
     which rounds to the 32 thousand shown in the TaxBrain difference table.)
 
-    WEBAPP bin 11 ($1000+ thousand) has weighted count of 636 thousand;
-              weighted count of units with tax increase is 27 thousand.
+    STANDARD bin 11 ($1000+ thousand) has weighted count of 636 thousand;
+                    weighted count of units with tax increase is 27 thousand.
 
-    So, the mean weight for all units in WEBAPP bin 11 is about 27.517 and the
-    unweighted number with a tax increase is 981 assuming all units in that
-    bin have the same weight.  (Note that 981 * 27.517 is about 26,994.18,
+    So, the mean weight for all units in STANDARD bin 11 is about 27.517 and
+    the unweighted number with a tax increase is 981 assuming all units in
+    that bin have the same weight.  (Note that 981 * 27.517 is about 26,994.18,
     which rounds to the 27 thousand shown in the TaxBrain difference table.)
     """
     dump = False  # setting to True implies results printed and test fails
     seed = 123456789
     bs_samples = 1000
     alpha = 0.025  # implies 95% confidence interval
-    # compute stderr and confidence interval for WEBAPP bin 10 increase count
+    # compute stderr and confidence interval for STANDARD bin 10 increase count
     data_list = [111.5421] * 287 + [0.0] * (10570 - 287)
     assert len(data_list) == 10570
     data = np.array(data_list)
@@ -403,26 +501,26 @@ def test_diff_count_precision():
     if dump:
         res = '{}EST={:.1f} B={} alpha={:.3f} se={:.2f} ci=[ {:.2f} , {:.2f} ]'
         print(
-            res.format('WEBAPP-BIN10: ',
+            res.format('STANDARD-BIN10: ',
                        data_estimate, bs_samples, alpha, stderr, cilo, cihi)
         )
     assert abs((stderr / 1.90) - 1) < 0.0008
     # NOTE: a se of 1.90 thousand implies that when comparing the difference
-    #       in the weighted number of filing units in WEBAPP bin 10 with a
+    #       in the weighted number of filing units in STANDARD bin 10 with a
     #       tax increase, the difference statistic has a bigger se (because
     #       the variance of the difference is the sum of the variances of the
-    #       two point estimates).  So, in WEBAPP bin 10 if the point estimates
-    #       both had se = 1.90, then the difference in the point estimates has
-    #       has a se = 2.687.  This means that the difference would have to be
-    #       over 5 thousand in order for there to be high confidence that the
-    #       difference was different from zero in a statistically significant
-    #       manner.
+    #       two point estimates).  So, in STANDARD bin 10 if the point
+    #       estimates both had se = 1.90, then the difference in the point
+    #       estimates has has a se = 2.687.  This means that the difference
+    #       would have to be over 5 thousand in order for there to be high
+    #       confidence that the difference was different from zero in a
+    #       statistically significant manner.
     #       Or put a different way, a difference of 1 thousand cannot be
     #       accurately detected while a difference of 10 thousand can be
     #       accurately detected.
     assert abs((cilo / 28.33) - 1) < 0.0012
     assert abs((cihi / 35.81) - 1) < 0.0012
-    # compute stderr and confidence interval for WEBAPP bin 11 increase count
+    # compute stderr and confidence interval for STANDARD bin 11 increase count
     data_list = [27.517] * 981 + [0.0] * (23113 - 981)
     assert len(data_list) == 23113
     data = np.array(data_list)
@@ -436,15 +534,15 @@ def test_diff_count_precision():
     if dump:
         res = '{}EST={:.1f} B={} alpha={:.3f} se={:.2f} ci=[ {:.2f} , {:.2f} ]'
         print(
-            res.format('WEBAPP-BIN11: ',
+            res.format('STANDARD-BIN11: ',
                        data_estimate, bs_samples, alpha, stderr, cilo, cihi)
         )
     assert abs((stderr / 0.85) - 1) < 0.0040
     # NOTE: a se of 0.85 thousand implies that when comparing the difference
-    #       in the weighted number of filing units in WEBAPP bin 11 with a
+    #       in the weighted number of filing units in STANDARD bin 11 with a
     #       tax increase, the difference statistic has a bigger se (because
     #       the variance of the difference is the sum of the variances of the
-    #       two point estimates).  So, in WEBAPP bin 11 if the point estimates
+    #       two point estimates).  So, in STANDARD bin 11 if point estimates
     #       both had se = 0.85, then the difference in the point estimates has
     #       has a se = 1.20.  This means that the difference would have to be
     #       over 2.5 thousand in order for there to be high confidence that the
@@ -556,22 +654,21 @@ def test_weighted_perc_cut():
 EPSILON = 1e-5
 
 
-def test_add_income_bins():
+def test_add_income_table_row_var():
     dta = np.arange(1, 1e6, 5000)
     dfx = pd.DataFrame(data=dta, columns=['expanded_income'])
-    bins = [-9e99, 0, 9999, 19999, 29999, 39999, 49999, 74999, 99999,
-            200000, 9e99]
-    dfr = add_income_bins(dfx, 'expanded_income', bin_type='tpc', bins=None,
-                          right=True)
-    groupedr = dfr.groupby('bins')
+    bins = LARGE_INCOME_BINS
+    dfr = add_income_table_row_variable(dfx, 'expanded_income',
+                                        bin_type='tpc', bins=None, right=True)
+    groupedr = dfr.groupby('table_row')
     idx = 1
     for name, _ in groupedr:
         assert name.closed == 'right'
         assert abs(name.right - bins[idx]) < EPSILON
         idx += 1
-    dfl = add_income_bins(dfx, 'expanded_income', bin_type='tpc', bins=None,
-                          right=False)
-    groupedl = dfl.groupby('bins')
+    dfl = add_income_table_row_variable(dfx, 'expanded_income',
+                                        bin_type='tpc', bins=None, right=False)
+    groupedl = dfl.groupby('table_row')
     idx = 1
     for name, _ in groupedl:
         assert name.closed == 'left'
@@ -579,21 +676,22 @@ def test_add_income_bins():
         idx += 1
 
 
-def test_add_income_bins_soi():
+def test_add_income_table_row_soi():
     dta = np.arange(1, 1e6, 5000)
     dfx = pd.DataFrame(data=dta, columns=['expanded_income'])
-    bins = [-9e99, 0, 4999, 9999, 14999, 19999, 24999, 29999, 39999,
-            49999, 74999, 99999, 199999, 499999, 999999, 1499999,
-            1999999, 4999999, 9999999, 9e99]
-    dfr = add_income_bins(dfx, 'expanded_income', bin_type='soi', right=True)
-    groupedr = dfr.groupby('bins')
+
+    bins = SMALL_INCOME_BINS
+    dfr = add_income_table_row_variable(dfx, 'expanded_income',
+                                        bin_type='soi', right=True)
+    groupedr = dfr.groupby('table_row')
     idx = 1
     for name, _ in groupedr:
         assert name.closed == 'right'
         assert abs(name.right - bins[idx]) < EPSILON
         idx += 1
-    dfl = add_income_bins(dfx, 'expanded_income', bin_type='soi', right=False)
-    groupedl = dfl.groupby('bins')
+    dfl = add_income_table_row_variable(dfx, 'expanded_income',
+                                        bin_type='soi', right=False)
+    groupedl = dfl.groupby('table_row')
     idx = 1
     for name, _ in groupedl:
         assert name.closed == 'left'
@@ -601,19 +699,21 @@ def test_add_income_bins_soi():
         idx += 1
 
 
-def test_add_exp_income_bins():
+def test_add_income_trow_var():
     dta = np.arange(1, 1e6, 5000)
     dfx = pd.DataFrame(data=dta, columns=['expanded_income'])
     bins = [-9e99, 0, 4999, 9999, 14999, 19999, 29999, 32999, 43999, 9e99]
-    dfr = add_income_bins(dfx, 'expanded_income', bins=bins, right=True)
-    groupedr = dfr.groupby('bins')
+    dfr = add_income_table_row_variable(dfx, 'expanded_income',
+                                        bins=bins, right=True)
+    groupedr = dfr.groupby('table_row')
     idx = 1
     for name, _ in groupedr:
         assert name.closed == 'right'
         assert abs(name.right - bins[idx]) < EPSILON
         idx += 1
-    dfl = add_income_bins(dfx, 'expanded_income', bins=bins, right=False)
-    groupedl = dfl.groupby('bins')
+    dfl = add_income_table_row_variable(dfx, 'expanded_income',
+                                        bins=bins, right=False)
+    groupedl = dfl.groupby('table_row')
     idx = 1
     for name, _ in groupedl:
         assert name.closed == 'left'
@@ -621,48 +721,41 @@ def test_add_exp_income_bins():
         idx += 1
 
 
-def test_add_income_bins_raises():
+def test_add_income_trow_var_raises():
     dta = np.arange(1, 1e6, 5000)
     dfx = pd.DataFrame(data=dta, columns=['expanded_income'])
     with pytest.raises(ValueError):
-        dfx = add_income_bins(dfx, 'expanded_income', bin_type='stuff')
+        dfx = add_income_table_row_variable(dfx, 'expanded_income',
+                                            bin_type='stuff')
 
 
-def test_add_quantile_bins():
+def test_add_quantile_trow_var():
     dfx = pd.DataFrame(data=DATA, columns=['expanded_income', 's006', 'label'])
-    dfb = add_quantile_bins(dfx, 'expanded_income', 100,
-                            weight_by_income_measure=False)
-    bin_labels = dfb['bins'].unique()
+    dfb = add_quantile_table_row_variable(dfx, 'expanded_income', 100,
+                                          weight_by_income_measure=False)
+    bin_labels = dfb['table_row'].unique()
     default_labels = set(range(1, 101))
     for lab in bin_labels:
         assert lab in default_labels
-    # custom labels
-    dfb = add_quantile_bins(dfx, 'expanded_income', 100,
-                            weight_by_income_measure=True)
-    assert 'bins' in dfb
-    custom_labels = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
-    dfb = add_quantile_bins(dfx, 'expanded_income', 10,
-                            labels=custom_labels)
-    assert 'bins' in dfb
-    bin_labels = dfb['bins'].unique()
-    for lab in bin_labels:
-        assert lab in custom_labels
+    dfb = add_quantile_table_row_variable(dfx, 'expanded_income', 100,
+                                          weight_by_income_measure=True)
+    assert 'table_row' in dfb
 
 
 def test_dist_table_sum_row(cps_subsample):
     rec = Records.cps_constructor(data=cps_subsample)
     calc = Calculator(policy=Policy(), records=rec)
     calc.calc_all()
-    tb1 = create_distribution_table(calc.dataframe(DIST_VARIABLES),
+    tb1 = create_distribution_table(calc.distribution_table_dataframe(),
                                     groupby='small_income_bins',
                                     income_measure='expanded_income',
                                     result_type='weighted_sum')
-    tb2 = create_distribution_table(calc.dataframe(DIST_VARIABLES),
+    tb2 = create_distribution_table(calc.distribution_table_dataframe(),
                                     groupby='large_income_bins',
                                     income_measure='expanded_income',
                                     result_type='weighted_sum')
     assert np.allclose(tb1[-1:], tb2[-1:])
-    tb3 = create_distribution_table(calc.dataframe(DIST_VARIABLES),
+    tb3 = create_distribution_table(calc.distribution_table_dataframe(),
                                     groupby='small_income_bins',
                                     income_measure='expanded_income',
                                     result_type='weighted_avg')
@@ -799,7 +892,7 @@ def test_write_graph_file(cps_subsample):
     htmlfname = temporary_filename(suffix='.html')
     try:
         write_graph_file(gplot, htmlfname, 'title')
-    except:  # pylint: disable=bare-except
+    except Exception:  # pylint: disable=broad-except
         if os.path.isfile(htmlfname):
             try:
                 os.remove(htmlfname)
@@ -898,7 +991,7 @@ def test_table_columns_labels():
     assert len(DIFF_TABLE_COLUMNS) == len(DIFF_TABLE_LABELS)
 
 
-def test_dec_graph_plot(cps_subsample):
+def test_dec_graph_plots(cps_subsample):
     pol = Policy()
     rec = Records.cps_constructor(data=cps_subsample)
     calc1 = Calculator(policy=pol, records=rec)
@@ -919,6 +1012,19 @@ def test_dec_graph_plot(cps_subsample):
     calc2.calc_all()
     fig = calc1.decile_graph(calc2)
     assert fig
+    dt1, dt2 = calc1.distribution_tables(calc2)
+    dta = dec_graph_data(dt1, dt2, year,
+                         include_zero_incomes=True,
+                         include_negative_incomes=False)
+    assert isinstance(dta, dict)
+    dta = dec_graph_data(dt1, dt2, year,
+                         include_zero_incomes=False,
+                         include_negative_incomes=True)
+    assert isinstance(dta, dict)
+    dta = dec_graph_data(dt1, dt2, year,
+                         include_zero_incomes=False,
+                         include_negative_incomes=False)
+    assert isinstance(dta, dict)
 
 
 def test_nonsmall_diffs():

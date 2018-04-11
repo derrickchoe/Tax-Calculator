@@ -2,7 +2,7 @@
 Test generates statistics for puf.csv variables.
 """
 # CODING-STYLE CHECKS:
-# pep8 --ignore=E402 test_puf_var_stats.py
+# pep8 test_puf_var_stats.py
 # pylint --disable=locally-disabled test_puf_var_stats.py
 
 import os
@@ -37,7 +37,7 @@ def create_base_table(test_path):
                  'c09600': 'Federal AMT liability'}
     # specify read variable names and descriptions
     unused_var_set = set(['AGIR1', 'DSI', 'EFI', 'EIC', 'ELECT', 'FDED',
-                          'h_seq', 'ffpos', 'fips', 'agi_bin',
+                          'h_seq', 'a_lineno', 'ffpos', 'fips', 'agi_bin',
                           'FLPDYR', 'FLPDMO', 'f2441', 'f3800', 'f6251',
                           'f8582', 'f8606', 'f8829', 'f8910', 'f8936', 'n20',
                           'n24', 'n25', 'n30', 'PREP', 'SCHB', 'SCHCF', 'SCHE',
@@ -49,6 +49,10 @@ def create_base_table(test_path):
                           'filer', 'matched_weight', 'e00200p', 'e00200s',
                           'e00900p', 'e00900s', 'e02100p', 'e02100s',
                           'age_head', 'age_spouse',
+                          'nu18', 'n1820', 'n21',
+                          'ssi_ben', 'snap_ben', 'other_ben',
+                          'mcare_ben', 'mcaid_ben', 'vet_ben',
+                          'housing_ben', 'tanf_ben', 'wic_ben',
                           'blind_head', 'blind_spouse'])
     read_vars = list(Records.USABLE_READ_VARS - unused_var_set)
     # get read variable information from JSON file
@@ -72,14 +76,22 @@ def calculate_corr_stats(calc, table):
     """
     Calculate correlation coefficient matrix.
     """
+    errmsg = ''
     for varname1 in table.index:
         var1 = calc.array(varname1)
         var1_cc = list()
         for varname2 in table.index:
             var2 = calc.array(varname2)
-            cor = np.corrcoef(var1, var2)[0][1]
+            try:
+                cor = np.corrcoef(var1, var2)[0][1]
+            except FloatingPointError:
+                msg = 'corr-coef error for {} and {}\n'
+                errmsg += msg.format(varname1, varname2)
+                cor = 9.99  # because could not compute it
             var1_cc.append(cor)
         table[varname1] = var1_cc
+    if errmsg:
+        raise ValueError('\n' + errmsg)
 
 
 def calculate_mean_stats(calc, table, year):

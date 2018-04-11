@@ -1,12 +1,17 @@
 """
 Test functions in taxcalc/tbi directory using both puf.csv and cps.csv input.
 """
+# CODING-STYLE CHECKS:
+# pep8 test_tbi.py
+
+from __future__ import print_function
+import json
 import numpy as np
 import pandas as pd
 import pytest
 from taxcalc.tbi.tbi_utils import *
 from taxcalc.tbi import *
-from taxcalc import Policy, Records, Calculator
+from taxcalc import Policy, Records, Calculator, nonsmall_diffs
 
 
 USER_MODS = {
@@ -80,29 +85,44 @@ def test_run_nth_year_value_errors():
 
 
 @pytest.mark.requires_pufcsv
-@pytest.mark.parametrize('resdict', [True, False])
-def test_run_tax_calc_model(resdict):
-    res = run_nth_year_tax_calc_model(2, 2016,
-                                      use_puf_not_cps=resdict,
+@pytest.mark.parametrize('using_puf', [True, False])
+def test_run_tax_calc_model(using_puf, tests_path):
+    res = run_nth_year_tax_calc_model(year_n=2, start_year=2018,
+                                      use_puf_not_cps=using_puf,
                                       use_full_sample=False,
                                       user_mods=USER_MODS,
-                                      return_dict=resdict)
+                                      return_dict=True)
     assert isinstance(res, dict)
-    dump = False  # set to True in order to dump returned results and fail test
+    # put actual results in a multiline string
+    actual_results = ''
     for tbl in sorted(res.keys()):
-        if resdict:
-            assert isinstance(res[tbl], dict)
-        else:
-            assert isinstance(res[tbl], pd.DataFrame)
-        if dump:
-            if resdict:
-                cols = sorted(res[tbl].keys())
-            else:
-                cols = sorted(list(res[tbl]))
-            for col in cols:
-                print('<<tbl={}:col={}>>'.format(tbl, col))
-                print(res[tbl][col])
-    assert not dump
+        actual_results += 'TABLE {} RESULTS:\n'.format(tbl)
+        actual_results += json.dumps(res[tbl], sort_keys=True,
+                                     indent=4, separators=(',', ': ')) + '\n'
+    # read expected results from file
+    if using_puf:
+        expect_fname = 'tbi_puf_expect.txt'
+    else:
+        expect_fname = 'tbi_cps_expect.txt'
+    expect_path = os.path.join(tests_path, expect_fname)
+    with open(expect_path, 'r') as expect_file:
+        expect_results = expect_file.read()
+    # ensure actual and expect results have no differences
+    diffs = nonsmall_diffs(actual_results.splitlines(True),
+                           expect_results.splitlines(True))
+    if diffs:
+        actual_fname = '{}{}'.format(expect_fname[:-10], 'actual.txt')
+        actual_path = os.path.join(tests_path, actual_fname)
+        with open(actual_path, 'w') as actual_file:
+            actual_file.write(actual_results)
+        msg = 'TBI RESULTS DIFFER\n'
+        msg += '----------------------------------------------\n'
+        msg += '--- NEW RESULTS IN {} FILE ---\n'
+        msg += '--- if new OK, copy {} to  ---\n'
+        msg += '---                 {}     ---\n'
+        msg += '---            and rerun test.             ---\n'
+        msg += '----------------------------------------------\n'
+        raise ValueError(msg.format(actual_fname, actual_fname, expect_fname))
 
 
 @pytest.mark.requires_pufcsv
@@ -262,3 +282,117 @@ def test_reform_warnings_errors():
     msg_dict = reform_warnings_errors(bad2_mods)
     assert len(msg_dict['warnings']) == 0
     assert len(msg_dict['errors']) > 0
+
+
+@pytest.mark.pre_release
+@pytest.mark.tbi_vs_std_behavior
+@pytest.mark.requires_pufcsv
+def test_behavioral_response(puf_subsample):
+    """
+    Test that behavioral-response results are the same
+    when generated from standard Tax-Calculator calls and
+    when generated from tbi.run_nth_year_tax_calc_model() calls
+    """
+    # specify reform and assumptions
+    reform_json = """
+    {"policy": {
+        "_II_rt5": {"2020": [0.25]},
+        "_II_rt6": {"2020": [0.25]},
+        "_II_rt7": {"2020": [0.25]},
+        "_PT_rt5": {"2020": [0.25]},
+        "_PT_rt6": {"2020": [0.25]},
+        "_PT_rt7": {"2020": [0.25]},
+        "_II_em": {"2020": [1000]}
+    }}
+    """
+    assump_json = """
+    {"behavior": {"_BE_sub": {"2013": [0.25]}},
+     "growdiff_baseline": {},
+     "growdiff_response": {},
+     "consumption": {}
+    }
+    """
+    params = Calculator.read_json_param_objects(reform_json, assump_json)
+    # specify keyword arguments used in tbi function call
+    kwargs = {
+        'start_year': 2019,
+        'year_n': 0,
+        'use_puf_not_cps': True,
+        'use_full_sample': False,
+        'user_mods': {
+            'policy': params['policy'],
+            'behavior': params['behavior'],
+            'growdiff_baseline': params['growdiff_baseline'],
+            'growdiff_response': params['growdiff_response'],
+            'consumption': params['consumption']
+        },
+        'return_dict': False
+    }
+    # generate aggregate results two ways: using tbi and standard calls
+    num_years = 9
+    std_res = dict()
+    tbi_res = dict()
+    for using_tbi in [True, False]:
+        for year in range(0, num_years):
+            cyr = year + kwargs['start_year']
+            if using_tbi:
+                kwargs['year_n'] = year
+                tables = run_nth_year_tax_calc_model(**kwargs)
+                tbi_res[cyr] = dict()
+                for tbl in ['aggr_1', 'aggr_2', 'aggr_d']:
+                    tbi_res[cyr][tbl] = tables[tbl]
+            else:
+                rec = Records(data=puf_subsample)
+                pol = Policy()
+                calc1 = Calculator(policy=pol, records=rec)
+                pol.implement_reform(params['policy'])
+                assert not pol.reform_errors
+                beh = Behavior()
+                beh.update_behavior(params['behavior'])
+                calc2 = Calculator(policy=pol, records=rec, behavior=beh)
+                assert calc2.behavior_has_response()
+                calc1.advance_to_year(cyr)
+                calc2.advance_to_year(cyr)
+                calc2 = Behavior.response(calc1, calc2)
+                std_res[cyr] = dict()
+                for tbl in ['aggr_1', 'aggr_2', 'aggr_d']:
+                    if tbl.endswith('_1'):
+                        itax = calc1.weighted_total('iitax')
+                        ptax = calc1.weighted_total('payrolltax')
+                        ctax = calc1.weighted_total('combined')
+                    elif tbl.endswith('_2'):
+                        itax = calc2.weighted_total('iitax')
+                        ptax = calc2.weighted_total('payrolltax')
+                        ctax = calc2.weighted_total('combined')
+                    elif tbl.endswith('_d'):
+                        itax = (calc2.weighted_total('iitax') -
+                                calc1.weighted_total('iitax'))
+                        ptax = (calc2.weighted_total('payrolltax') -
+                                calc1.weighted_total('payrolltax'))
+                        ctax = (calc2.weighted_total('combined') -
+                                calc1.weighted_total('combined'))
+                    cols = ['0_{}'.format(year)]
+                    rows = ['ind_tax', 'payroll_tax', 'combined_tax']
+                    datalist = [itax, ptax, ctax]
+                    std_res[cyr][tbl] = pd.DataFrame(data=datalist,
+                                                     index=rows,
+                                                     columns=cols)
+    # compare the two sets of results
+    # NOTE that the tbi results have been "fuzzed" for PUF privacy reasons,
+    #      so there is no expectation that the results should be identical.
+    no_diffs = True
+    reltol = 2.5e-3  # std and tbi differ if more than 0.25 percent different
+    for year in range(0, num_years):
+        cyr = year + kwargs['start_year']
+        col = '0_{}'.format(year)
+        for tbl in ['aggr_1', 'aggr_2', 'aggr_d']:
+            tbi = tbi_res[cyr][tbl][col]
+            std = std_res[cyr][tbl][col]
+            if not np.allclose(tbi, std, atol=0.0, rtol=reltol):
+                no_diffs = False
+                print('**** DIFF for year {} (year_n={}):'.format(cyr, year))
+                print('TBI RESULTS:')
+                print(tbi)
+                print('STD RESULTS:')
+                print(std)
+    assert no_diffs

@@ -2,7 +2,7 @@
 Tests for Tax-Calculator ParametersBase class and JSON parameter files.
 """
 # CODING-STYLE CHECKS:
-# pep8 --ignore=E402 test_parameters.py
+# pep8 test_parameters.py
 # pylint --disable=locally-disabled test_parameters.py
 
 import os
@@ -111,9 +111,10 @@ def test_json_file_contents(tests_path, fname):
         rowlabel = param['row_label']
         assert isinstance(rowlabel, list)
         # check all row_label values
-        for idx in range(0, len(rowlabel)):
-            cyr = first_year + idx
-            assert int(rowlabel[idx]) == cyr
+        cyr = first_year
+        for rlabel in rowlabel:
+            assert int(rlabel) == cyr
+            cyr += 1
         # check type and dimension of value
         value = param['value']
         assert isinstance(value, list)
@@ -185,6 +186,8 @@ def test_parameters_mentioned(tests_path, jfname, pfname):
         code_text = ''
         for var in Consumption.RESPONSE_VARS:
             code_text += 'MPC_{}\n'.format(var)
+        for var in Consumption.BENEFIT_VARS:
+            code_text += 'BEN_{}_value\n'.format(var)
     else:
         # parameters are explicitly named in PYTHON file
         path = os.path.join(tests_path, '..', pfname)
@@ -356,3 +359,31 @@ def test_bool_int_value_info(tests_path, json_filename):
                              pdict[param]['boolean_value'],
                              valstr)
             assert msg == 'ERROR: boolean_value param has non-boolean value'
+
+
+@pytest.mark.parametrize('json_filename',
+                         ['current_law_policy.json',
+                          'behavior.json',
+                          'consumption.json',
+                          'growdiff.json'])
+def test_cpi_inflatable_info(tests_path, json_filename):
+    """
+    Check presence and consistency of cpi_inflatable info in
+    JSON parameter files.
+    """
+    path = os.path.join(tests_path, '..', json_filename)
+    with open(path, 'r') as pfile:
+        pdict = json.load(pfile)
+    for param in sorted(pdict.keys()):
+        # check for presence of cpi_inflatable field
+        if 'cpi_inflatable' not in pdict[param]:
+            msg = 'param= {}'.format(str(param))
+            assert msg == 'ERROR: missing cpi_inflatable field'
+        # ensure that cpi_inflatable is True when cpi_inflated is True
+        if pdict[param]['cpi_inflated'] and not pdict[param]['cpi_inflatable']:
+            msg = 'param= {}'.format(str(param))
+            assert msg == 'ERROR: cpi_inflatable=False when cpi_inflated=True'
+        # ensure that cpi_inflatable is False when integer_value is True
+        if pdict[param]['integer_value'] and pdict[param]['cpi_inflatable']:
+            msg = 'param= {}'.format(str(param))
+            assert msg == 'ERROR: cpi_inflatable=True when integer_value=True'

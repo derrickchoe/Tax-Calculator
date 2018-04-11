@@ -2,9 +2,10 @@
 Tax-Calculator federal tax policy Policy class.
 """
 # CODING-STYLE CHECKS:
-# pep8 --ignore=E402 policy.py
+# pep8 policy.py
 # pylint --disable=locally-disabled policy.py
 
+from __future__ import print_function
 import six
 import numpy as np
 from taxcalc.parameters import ParametersBase
@@ -102,7 +103,7 @@ class Policy(ParametersBase):
         """
         return self._wage_growth_rates
 
-    def implement_reform(self, reform):
+    def implement_reform(self, reform, print_warnings=True, raise_errors=True):
         """
         Implement multi-year policy reform and leave current_year unchanged.
 
@@ -110,6 +111,16 @@ class Policy(ParametersBase):
         ----------
         reform: dictionary of one or more YEAR:MODS pairs
             see Notes to Parameters _update method for info on MODS structure
+
+        print_warnings: boolean
+            if True (the default), prints warnings when reform_warnings exists;
+            if False, does not print warnings when reform_warnings exists and
+                      leaves warning handling to caller of implement_reform.
+
+        raise_errors: boolean
+            if True (the default), raises ValueError when reform_errors exists;
+            if False, does not raise ValueError when reform_errors exists and
+                      leaves error handling to caller of implement_reform.
 
         Raises
         ------
@@ -119,7 +130,8 @@ class Policy(ParametersBase):
             if minimum YEAR in the YEAR:MODS pairs is less than start_year.
             if minimum YEAR in the YEAR:MODS pairs is less than current_year.
             if maximum YEAR in the YEAR:MODS pairs is greater than end_year.
-            if Policy._validate_parameter_names generates any error messages.
+            if Policy._validate_parameter_names_types generates error messages.
+            if Policy._validate_parameter_values generates error messages.
 
         Returns
         -------
@@ -195,6 +207,8 @@ class Policy(ParametersBase):
             msg = 'ERROR: {} YEAR reform provision in YEAR > end_year={}'
             raise ValueError(msg.format(last_reform_year, self.end_year))
         # validate reform parameter names and types
+        self.reform_warnings = ''
+        self.reform_errors = ''
         self._validate_parameter_names_types(reform)
         if not self._ignore_errors and self.reform_errors:
             raise ValueError(self.reform_errors)
@@ -212,6 +226,10 @@ class Policy(ParametersBase):
         self.set_year(precall_current_year)
         # validate reform parameter values
         self._validate_parameter_values(reform_parameters)
+        if self.reform_warnings and print_warnings:
+            print(self.reform_warnings)
+        if self.reform_errors and raise_errors:
+            raise ValueError('\n' + self.reform_errors)
 
     def current_law_version(self):
         """
@@ -308,6 +326,8 @@ class Policy(ParametersBase):
                 gdiff_baseline.apply_to(growfactors)
                 gdiff_response.apply_to(growfactors)
             else:
+                gdiff_baseline = None
+                gdiff_response = None
                 growfactors = None
             pol = Policy(gfactors=growfactors)
             pol.ignore_reform_errors()
@@ -323,7 +343,13 @@ class Policy(ParametersBase):
                         idx = Policy.JSON_REFORM_SUFFIXES[suffix]
                         odict[param][year][0][idx] = gdict[param][year][suffix]
                         udict = {int(year): {param: odict[param][year]}}
-                        pol.implement_reform(udict)
+                        pol.implement_reform(udict,
+                                             print_warnings=False,
+                                             raise_errors=False)
+            del gdiff_baseline
+            del gdiff_response
+            del growfactors
+            del pol
             return odict
 
         # high-level logic of translate_json_reform_suffixes method:
@@ -410,32 +436,42 @@ class Policy(ParametersBase):
         in the specified reform dictionary.
         """
         # pylint: disable=too-many-branches,too-many-nested-blocks
-        data_names = set(self._vals.keys())
+        # pylint: disable=too-many-locals
+        param_names = set(self._vals.keys())
         for year in sorted(reform.keys()):
             for name in reform[year]:
                 if name.endswith('_cpi'):
                     if isinstance(reform[year][name], bool):
                         pname = name[:-4]  # root parameter name
-                        if pname not in data_names:
+                        if pname not in param_names:
                             msg = '{} {} unknown parameter name'
                             self.reform_errors += (
                                 'ERROR: ' + msg.format(year, name) + '\n'
                             )
+                        else:
+                            # check if root parameter is cpi inflatable
+                            if not self._vals[pname]['cpi_inflatable']:
+                                msg = '{} {} parameter is not cpi inflatable'
+                                self.reform_errors += (
+                                    'ERROR: ' + msg.format(year, pname) + '\n'
+                                )
                     else:
                         msg = '{} {} parameter is not true or false'
                         self.reform_errors += (
                             'ERROR: ' + msg.format(year, name) + '\n'
                         )
                 else:  # if name does not end with '_cpi'
-                    if name not in data_names:
+                    if name not in param_names:
                         msg = '{} {} unknown parameter name'
                         self.reform_errors += (
                             'ERROR: ' + msg.format(year, name) + '\n'
                         )
                     else:
-                        # check parameter value type
-                        bool_type = self._vals[name]['boolean_value']
-                        int_type = self._vals[name]['integer_value']
+                        # check parameter value type avoiding use of isinstance
+                        # because isinstance(True, (int,float)) is True, which
+                        # makes it impossible to check float parameters
+                        bool_param_type = self._vals[name]['boolean_value']
+                        int_param_type = self._vals[name]['integer_value']
                         assert isinstance(reform[year][name], list)
                         pvalue = reform[year][name][0]
                         if isinstance(pvalue, list):
@@ -443,42 +479,42 @@ class Policy(ParametersBase):
                         else:
                             scalar = True  # parameter value is a scalar
                             pvalue = [pvalue]  # make scalar a single-item list
+                        # pylint: disable=consider-using-enumerate
                         for idx in range(0, len(pvalue)):
                             if scalar:
                                 pname = name
                             else:
                                 pname = '{}_{}'.format(name, idx)
-                            pvalue_boolean = (
-                                isinstance(pvalue[idx], bool) or
-                                (isinstance(pvalue[idx], int) and
-                                 (pvalue[idx] == 0 or pvalue[idx] == 1)) or
-                                (isinstance(pvalue[idx], float) and
-                                 (pvalue[idx] == 0.0 or pvalue[idx] == 1.0))
-                            )
-                            if bool_type:
-                                if not pvalue_boolean:
+                            pval = pvalue[idx]
+                            # pylint: disable=unidiomatic-typecheck
+                            pval_is_bool = type(pval) == bool
+                            pval_is_int = type(pval) == int
+                            pval_is_float = type(pval) == float
+                            if bool_param_type:
+                                if not pval_is_bool:
                                     msg = '{} {} value {} is not boolean'
                                     self.reform_errors += (
                                         'ERROR: ' +
-                                        msg.format(year, pname, pvalue[idx]) +
+                                        msg.format(year, pname, pval) +
                                         '\n'
                                     )
-                            elif int_type:
-                                if not isinstance(pvalue[idx], int):
+                            elif int_param_type:
+                                if not pval_is_int:
                                     msg = '{} {} value {} is not integer'
                                     self.reform_errors += (
                                         'ERROR: ' +
-                                        msg.format(year, pname, pvalue[idx]) +
+                                        msg.format(year, pname, pval) +
                                         '\n'
                                     )
-                            else:  # param is neither bool_type nor int_type
-                                if not isinstance(pvalue[idx], (float, int)):
+                            else:  # param is float type
+                                if not (pval_is_int or pval_is_float):
                                     msg = '{} {} value {} is not a number'
                                     self.reform_errors += (
                                         'ERROR: ' +
-                                        msg.format(year, pname, pvalue[idx]) +
+                                        msg.format(year, pname, pval) +
                                         '\n'
                                     )
+        del param_names
 
     def _validate_parameter_values(self, parameters_set):
         """
@@ -552,3 +588,5 @@ class Policy(ParametersBase):
                                                        pvalue[idx],
                                                        vvalue[idx]) + '\n'
                             )
+        del clp
+        del parameters

@@ -2,11 +2,12 @@
 Tax-Calculator Growfactors class.
 """
 # CODING-STYLE CHECKS:
-# pep8 --ignore=E402 growfactors.py
+# pep8 growfactors.py
 # pylint --disable=locally-disabled growfactors.py
 
 import os
 import six
+import numpy as np
 import pandas as pd
 from taxcalc.utils import read_egg_csv
 
@@ -44,7 +45,7 @@ class Growfactors(object):
                        'ADIVS', 'AINTS',
                        'AIPD', 'ASCHCI', 'ASCHCL',
                        'ASCHEI', 'ASCHEL', 'ASCHF',
-                       'ASOCSEC', 'ATXPY', 'AUCOMP', 'AWAGE'])
+                       'ASOCSEC', 'ATXPY', 'AUCOMP', 'AWAGE', 'ABENEFITS'])
 
     def __init__(self, growfactors_filename=FILE_PATH):
         # read grow factors from specified growfactors_filename
@@ -72,7 +73,9 @@ class Growfactors(object):
         self._last_year = max(gfdf.index)
         # set gfdf as attribute of class
         self.gfdf = pd.DataFrame()
-        setattr(self, 'gfdf', gfdf)
+        setattr(self, 'gfdf',
+                gfdf.astype(np.float64))  # pylint: disable=no-member
+        del gfdf
         # specify factors as being unused (that is, not yet accessed)
         self.used = False
 
