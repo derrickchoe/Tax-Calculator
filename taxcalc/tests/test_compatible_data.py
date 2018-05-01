@@ -1,4 +1,3 @@
-
 """
 Tests of the compatible_data fields in the current_law_policy.json file.
 
@@ -244,7 +243,7 @@ def test_compatible_data(cps_subsample, puf_subsample,
     exempt_from_testing = ['_CG_ec', '_CG_reinvest_ec_rt']
 
     # Loop through the parameters in allparams_batch
-    errmsg = 'ERROR: {} not {} for {}\n'
+    errmsg = 'ERROR: {} {}\n'
     errors = ''
     for pname in allparams_batch:
         param = allparams_batch[pname]
@@ -316,18 +315,18 @@ def test_compatible_data(cps_subsample, puf_subsample,
                 )
             if min_reform_change == 0 and pname not in exempt_from_testing:
                 if puftest:
-                    if param['compatible_data']['puf'] is not False:
-                        errors += errmsg.format(pname, 'False', 'puf')
+                    if param['compatible_data']['puf'] is True:
+                        errors += errmsg.format(pname, 'is not True for puf')
                 else:
-                    if param['compatible_data']['cps'] is not False:
-                        errors += errmsg.format(pname, 'False', 'cps')
+                    if param['compatible_data']['cps'] is True:
+                        errors += errmsg.format(pname, 'is not True for cps')
         if max_reform_change != 0 or min_reform_change != 0:
             if puftest:
-                if param['compatible_data']['puf'] is not True:
-                    errors += errmsg.format(pname, 'True', 'puf')
+                if param['compatible_data']['puf'] is False:
+                    errors += errmsg.format(pname, 'is not False for puf')
             else:
-                if param['compatible_data']['cps'] is not True:
-                    errors += errmsg.format(pname, 'True', 'cps')
+                if param['compatible_data']['cps'] is False:
+                    errors += errmsg.format(pname, 'is not False for cps')
     # test failure if any errors
     if errors:
         print(errors)
