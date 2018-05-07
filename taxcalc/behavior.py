@@ -420,6 +420,66 @@ class Behavior(ParametersBase):
                                        nc_charity_price_pch *
                                        calc1.array('e20100')),
                                       nc_charity_chg)
+
+        no_charity_inc_response = (calc2.behavior('BE_charity_inc').tolist() ==
+                                   [0.0, 0.0, 0.0])
+        if no_charity_inc_response:
+            c_charity_inc_chg = np.zeros(calc1.array_len)
+            nc_charity_inc_chg = np.zeros(calc1.array_len)
+        else:
+            # set income groups
+            agi = calc1.array('c00100')
+            low_income = (agi < 50000)
+            mid_income = ((agi >= 50000) & (agi < 100000))
+            high_income = (agi >= 100000)
+            # proportional change in after-tax income
+            with np.errstate(invalid='ignore'):
+                pch = np.where(calc1.array('aftertax_income') > 0.,
+                               (calc2.array('aftertax_income') /
+                                calc1.array('aftertax_income')) - 1.,
+                               0.)
+            # calculate charity cash income effect
+            c_charity_inc_chg = np.zeros(calc1.array_len)
+            # low income
+            c_charity_inc_chg = np.where(low_income,
+                                         calc2.behavior('BE_charity_inc')[0] *
+                                         pch *
+                                         calc1.array('e19800'),
+                                         c_charity_inc_chg)
+            # mid income
+            c_charity_inc_chg = np.where(mid_income,
+                                         calc2.behavior('BE_charity_inc')[1] *
+                                         pch *
+                                         calc1.array('e19800'),
+                                         c_charity_inc_chg)
+            # high income
+            c_charity_inc_chg = np.where(high_income,
+                                         calc2.behavior('BE_charity_inc')[2] *
+                                         pch *
+                                         calc1.array('e19800'),
+                                         c_charity_inc_chg)
+            # noncash charity income effect
+            nc_charity_inc_chg = np.zeros(calc1.array_len)
+            # low income
+            nc_charity_inc_chg = np.where(low_income,
+                                         calc2.behavior('BE_charity_inc')[0] *
+                                         pch *
+                                         calc1.array('e20100'),
+                                         nc_charity_inc_chg)
+            # mid income
+            nc_charity_inc_chg = np.where(mid_income,
+                                         calc2.behavior('BE_charity_inc')[1] *
+                                         pch *
+                                         calc1.array('e20100'),
+                                         nc_charity_inc_chg)
+            # high income
+            nc_charity_inc_chg = np.where(high_income,
+                                         calc2.behavior('BE_charity_inc')[2] *
+                                         pch *
+                                         calc1.array('e20100'),
+                                         nc_charity_inc_chg)
+
+
         # Add behavioral-response changes to income sources
         calc2_behv = copy.deepcopy(calc2)
         if not zero_sub_and_inc:
@@ -432,6 +492,8 @@ class Behavior(ParametersBase):
         calc2_behv = Behavior._update_cap_gain_income(ltcg_chg,
                                                       calc2_behv)
         calc2_behv = Behavior._update_charity(c_charity_chg, nc_charity_chg,
+                                              c_charity_inc_chg,
+                                              nc_charity_inc_chg,
                                               calc2_behv)
         # Recalculate post-reform taxes incorporating behavioral responses
         calc2_behv.calc_all()
@@ -591,13 +653,17 @@ class Behavior(ParametersBase):
         return calc
 
     @staticmethod
-    def _update_charity(cash_charity_change, non_cash_charity_change, calc):
+    def _update_charity(cash_charity_change, non_cash_charity_change,
+                        cash_charity_inc_effect,
+                        non_cash_charity_inc_effect, calc):
         """
         Implement cash charitable contribution change induced
         by behavioral responses.
         """
         calc.incarray('e19800', cash_charity_change)
         calc.incarray('e20100', non_cash_charity_change)
+        calc.incarray('e19800', cash_charity_inc_effect)
+        calc.incarray('e20100', non_cash_charity_inc_effect)
         return calc
 
     @staticmethod

@@ -1445,11 +1445,11 @@ def EducationTaxCredit(exact, e87530, MARS, c00100, num, c05800,
 
 @iterate_jit(nopython=True)
 def NonrefundableCredits(c05800, e07240, e07260, e07300, e07400,
-                         e07600, p08000, prectc, dep_credit,
+                         e07600, e19800, e20100, p08000, prectc, dep_credit,
                          personal_nonrefundable_credit,
                          CR_RetirementSavings_hc, CR_ForeignTax_hc,
                          CR_ResidentialEnergy_hc, CR_GeneralBusiness_hc,
-                         CR_MinimumTax_hc, CR_OtherCredits_hc,
+                         CR_MinimumTax_hc, CR_OtherCredits_hc, CR_Charity_rt,
                          c07180, c07200, c07220, c07230, c07240,
                          c07260, c07300, c07400, c07600, c08000,
                          DependentCredit_before_CTC):
@@ -1505,11 +1505,14 @@ def NonrefundableCredits(c05800, e07240, e07260, e07300, e07400,
     # Other credits
     c08000 = min(p08000 * (1. - CR_OtherCredits_hc), avail)
     avail = avail - c08000
+    # Charity credit
+    charity_credit = min(CR_Charity_rt * (e19800 + e20100), avail)
+    avail = avail - charity_credit
     # Personal nonrefundable credit
     personal_nonrefundable_credit = min(personal_nonrefundable_credit, avail)
     avail = avail - personal_nonrefundable_credit
     return (c07180, c07200, c07220, c07230, c07240, dep_credit,
-            c07260, c07300, c07400, c07600, c08000,
+            c07260, c07300, c07400, c07600, c08000, charity_credit,
             personal_nonrefundable_credit)
 
 
@@ -1572,14 +1575,15 @@ def AdditionalCTC(n24, prectc, earned, c07220, ptax_was,
 @iterate_jit(nopython=True)
 def C1040(c05800, c07180, c07200, c07220, c07230, c07240, c07260, c07300,
           c07400, c07600, c08000, e09700, e09800, e09900, niit, othertaxes,
-          c07100, c09200, dep_credit, personal_nonrefundable_credit):
+          c07100, c09200, dep_credit, charity_credit,
+          personal_nonrefundable_credit):
     """
     Computes total used nonrefundable credits, c07100, othertaxes, and
     income tax before refundable credits, c09200.
     """
     # total used nonrefundable credits (as computed in NonrefundableCredits)
     c07100 = (c07180 + c07200 + c07600 + c07300 + c07400 + c07220 + c08000 +
-              c07230 + c07240 + c07260 + dep_credit +
+              c07230 + c07240 + c07260 + dep_credit + charity_credit +
               personal_nonrefundable_credit)
     # tax after credits (2016 Form 1040, line 56)
     tax_net_nonrefundable_credits = max(0., c05800 - c07100)
