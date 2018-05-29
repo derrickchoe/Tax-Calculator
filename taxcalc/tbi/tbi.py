@@ -1,5 +1,5 @@
 """
-The public API of the TaxBrain Interface (tbi).
+The public API of the TaxBrain Interface (tbi) to Tax-Calculator.
 
 The tbi functions are used by TaxBrain to call Tax-Calculator in order
 to do distributed processing of TaxBrain runs and in order to maintain
@@ -29,14 +29,14 @@ from taxcalc.tbi.tbi_utils import (check_years_return_first_year,
                                    AGGR_ROW_NAMES)
 from taxcalc import (DIST_TABLE_LABELS, DIFF_TABLE_LABELS,
                      proportional_change_in_gdp,
-                     Growdiff, Growfactors, Policy, Behavior, Consumption)
+                     GrowDiff, GrowFactors, Policy, Behavior, Consumption)
 
 AGG_ROW_NAMES = AGGR_ROW_NAMES
 
 GDP_ELAST_ROW_NAMES = ['gdp_proportional_change']
 
 
-def reform_warnings_errors(user_mods):
+def reform_warnings_errors(user_mods, using_puf):
     """
     The reform_warnings_errors function assumes user_mods is a dictionary
     returned by the Calculator.read_json_param_objects() function.
@@ -53,19 +53,19 @@ def reform_warnings_errors(user_mods):
                 'consumption': {'warnings': '', 'errors': ''},
                 'growdiff_baseline': {'warnings': '', 'errors': ''},
                 'growdiff_response': {'warnings': '', 'errors': ''}}
-    # create Growdiff objects
-    gdiff_baseline = Growdiff()
+    # create GrowDiff objects
+    gdiff_baseline = GrowDiff()
     try:
         gdiff_baseline.update_growdiff(user_mods['growdiff_baseline'])
     except ValueError as valerr_msg:
         rtn_dict['growdiff_baseline']['errors'] = valerr_msg.__str__()
-    gdiff_response = Growdiff()
+    gdiff_response = GrowDiff()
     try:
         gdiff_response.update_growdiff(user_mods['growdiff_response'])
     except ValueError as valerr_msg:
         rtn_dict['growdiff_response']['errors'] = valerr_msg.__str__()
     # create Growfactors object
-    growfactors = Growfactors()
+    growfactors = GrowFactors()
     gdiff_baseline.apply_to(growfactors)
     gdiff_response.apply_to(growfactors)
     # create Policy object
@@ -74,7 +74,8 @@ def reform_warnings_errors(user_mods):
         pol.implement_reform(user_mods['policy'],
                              print_warnings=False,
                              raise_errors=False)
-        rtn_dict['policy']['warnings'] = pol.parameter_warnings
+        if using_puf:
+            rtn_dict['policy']['warnings'] = pol.parameter_warnings
         rtn_dict['policy']['errors'] = pol.parameter_errors
     except ValueError as valerr_msg:
         rtn_dict['policy']['errors'] = valerr_msg.__str__()
@@ -94,13 +95,13 @@ def reform_warnings_errors(user_mods):
     return rtn_dict
 
 
-def run_nth_year_tax_calc_model(year_n, start_year,
-                                use_puf_not_cps,
-                                use_full_sample,
-                                user_mods,
-                                return_dict=True):
+def run_nth_year_taxcalc_model(year_n, start_year,
+                               use_puf_not_cps,
+                               use_full_sample,
+                               user_mods,
+                               return_dict=True):
     """
-    The run_nth_year_tax_calc_model function assumes user_mods is a dictionary
+    The run_nth_year_taxcalc_model function assumes user_mods is a dictionary
       returned by the Calculator.read_json_param_objects() function.
     Setting use_puf_not_cps=True implies use puf.csv input file;
       otherwise, use cps.csv input file.

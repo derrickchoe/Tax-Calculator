@@ -31,6 +31,8 @@ USER_MODS = {
     },
     'growdiff_response': {
     },
+    'growmodel': {
+    }
 }
 
 
@@ -171,8 +173,9 @@ def test_with_pufcsv(puf_fullsample):
     usermods['behavior'] = {}
     usermods['growdiff_baseline'] = {}
     usermods['growdiff_response'] = {}
+    usermods['growmodel'] = {}
     seed = random_seed(usermods)
-    assert seed == 1574318062
+    assert seed == 580419828
     # create a Policy object (pol) containing reform policy parameters
     pol = Policy()
     pol.implement_reform(usermods['policy'])
@@ -188,11 +191,11 @@ def test_with_pufcsv(puf_fullsample):
     assert taxes_fullsample is not None
     fulls_reform_revenue = float(taxes_fullsample.loc[analysis_year])
     # call run_nth_year_tax_calc_model function
-    resdict = run_nth_year_tax_calc_model(year_n, start_year,
-                                          use_puf_not_cps=True,
-                                          use_full_sample=True,
-                                          user_mods=usermods,
-                                          return_dict=True)
+    resdict = run_nth_year_taxcalc_model(year_n, start_year,
+                                         use_puf_not_cps=True,
+                                         use_full_sample=True,
+                                         user_mods=usermods,
+                                         return_dict=True)
     total = resdict['aggr_2']
     tbi_reform_revenue = float(total['combined_tax_9']) * 1e-9
     # assert that tbi revenue is similar to the fullsample calculation
@@ -206,7 +209,7 @@ def test_with_pufcsv(puf_fullsample):
 
 
 def test_reform_warnings_errors():
-    msg_dict = reform_warnings_errors(USER_MODS)
+    msg_dict = reform_warnings_errors(USER_MODS, using_puf=True)
     assert len(msg_dict['policy']['warnings']) == 0
     assert len(msg_dict['policy']['errors']) == 0
     bad1_mods = {
@@ -214,9 +217,10 @@ def test_reform_warnings_errors():
         'consumption': {},
         'behavior': {},
         'growdiff_baseline': {},
-        'growdiff_response': {}
+        'growdiff_response': {},
+        'growmodel': {}
     }
-    msg_dict = reform_warnings_errors(bad1_mods)
+    msg_dict = reform_warnings_errors(bad1_mods, using_puf=True)
     assert len(msg_dict['policy']['warnings']) > 0
     assert len(msg_dict['policy']['errors']) > 0
     bad2_mods = {
@@ -224,13 +228,14 @@ def test_reform_warnings_errors():
         'consumption': {},
         'behavior': {},
         'growdiff_baseline': {},
-        'growdiff_response': {}
+        'growdiff_response': {},
+        'growmodel': {}
     }
-    msg_dict = reform_warnings_errors(bad2_mods)
+    msg_dict = reform_warnings_errors(bad2_mods, using_puf=True)
     assert len(msg_dict['policy']['warnings']) == 0
     assert len(msg_dict['policy']['errors']) > 0
     bad3_mods = dict(USER_MODS, **{'behavior': {2017: {'_BE_inc': [0.8]}}})
-    msg_dict = reform_warnings_errors(bad3_mods)
+    msg_dict = reform_warnings_errors(bad3_mods, using_puf=True)
     assert len(msg_dict['policy']['warnings']) == 0
     assert len(msg_dict['policy']['errors']) == 0
     assert len(msg_dict['behavior']['warnings']) == 0
@@ -244,7 +249,7 @@ def test_behavioral_response(puf_subsample):
     """
     Test that behavioral-response results are the same
     when generated from standard Tax-Calculator calls and
-    when generated from tbi.run_nth_year_tax_calc_model() calls
+    when generated from tbi.run_nth_year_taxcalc_model() calls
     """
     # specify reform and assumptions
     reform_json = """
@@ -262,7 +267,8 @@ def test_behavioral_response(puf_subsample):
     {"behavior": {"_BE_sub": {"2013": [0.25]}},
      "growdiff_baseline": {},
      "growdiff_response": {},
-     "consumption": {}
+     "consumption": {},
+     "growmodel": {}
     }
     """
     params = Calculator.read_json_param_objects(reform_json, assump_json)
@@ -277,7 +283,8 @@ def test_behavioral_response(puf_subsample):
             'behavior': params['behavior'],
             'growdiff_baseline': params['growdiff_baseline'],
             'growdiff_response': params['growdiff_response'],
-            'consumption': params['consumption']
+            'consumption': params['consumption'],
+            'growmodel': params['growmodel']
         },
         'return_dict': False
     }
@@ -290,7 +297,7 @@ def test_behavioral_response(puf_subsample):
             cyr = year + kwargs['start_year']
             if using_tbi:
                 kwargs['year_n'] = year
-                tables = run_nth_year_tax_calc_model(**kwargs)
+                tables = run_nth_year_taxcalc_model(**kwargs)
                 tbi_res[cyr] = dict()
                 for tbl in ['aggr_1', 'aggr_2', 'aggr_d']:
                     tbi_res[cyr][tbl] = tables[tbl]

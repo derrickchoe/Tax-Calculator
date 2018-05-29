@@ -9,7 +9,31 @@ import tempfile
 import numpy as np
 from numpy.testing import assert_allclose
 import pytest
-from taxcalc import Policy, Calculator, Growfactors, Growdiff
+from taxcalc import Policy, Calculator
+
+
+def test_incorrect_Policy_instantiation():
+    with pytest.raises(ValueError):
+        Policy(gfactors=list())
+    with pytest.raises(ValueError):
+        Policy(start_year=2000)
+    with pytest.raises(ValueError):
+        Policy(num_years=0)
+
+
+def test_correct_Policy_instantiation():
+    pol = Policy()
+    assert pol
+    pol.implement_reform({})
+    with pytest.raises(ValueError):
+        pol.implement_reform(list())
+    with pytest.raises(ValueError):
+        pol.implement_reform({2099: {'_II_em': [99000]}})
+    pol.set_year(2019)
+    with pytest.raises(ValueError):
+        pol.implement_reform({2018: {'_II_em': [99000]}})
+    with pytest.raises(ValueError):
+        pol.implement_reform({2020: {'_II_em': [-1000]}})
 
 
 @pytest.fixture(scope='module', name='policyfile')
@@ -29,28 +53,6 @@ def fixture_policyfile():
     # Must close and then yield for Windows platform
     yield f
     os.remove(f.name)
-
-
-def test_incorrect_Policy_instantiation():
-    with pytest.raises(ValueError):
-        p = Policy(gfactors=dict())
-    with pytest.raises(ValueError):
-        p = Policy(num_years=0)
-
-
-def test_correct_Policy_instantiation():
-    pol = Policy()
-    assert pol
-    pol.implement_reform({})
-    with pytest.raises(ValueError):
-        pol.implement_reform(list())
-    with pytest.raises(ValueError):
-        pol.implement_reform({2099: {'_II_em': [99000]}})
-    pol.set_year(2019)
-    with pytest.raises(ValueError):
-        pol.implement_reform({2018: {'_II_em': [99000]}})
-    with pytest.raises(ValueError):
-        pol.implement_reform({2020: {'_II_em': [-1000]}})
 
 
 def test_policy_json_content():
@@ -615,27 +617,6 @@ def test_misspecified_reforms():
     assert not reform1 == reform2
 
 
-def test_current_law_version():
-    syr = 2013
-    nyrs = 8
-    pol = Policy(start_year=syr, num_years=nyrs)
-    mte = pol._SS_Earnings_c
-    clp_mte_2015 = mte[2015 - syr]
-    clp_mte_2016 = mte[2016 - syr]
-    reform = {2016: {'_SS_Earnings_c': [500000]}}
-    pol.implement_reform(reform)
-    mte = pol._SS_Earnings_c
-    ref_mte_2015 = mte[2015 - syr]
-    ref_mte_2016 = mte[2016 - syr]
-    clv = pol.current_law_version()
-    mte = clv._SS_Earnings_c
-    clv_mte_2015 = mte[2015 - syr]
-    clv_mte_2016 = mte[2016 - syr]
-    assert clp_mte_2015 == ref_mte_2015 == clv_mte_2015
-    assert clp_mte_2016 != ref_mte_2016
-    assert clp_mte_2016 == clv_mte_2016
-
-
 def test_section_titles(tests_path):
     """
     Check section titles in current_law_policy.json and index.htmx files.
@@ -962,7 +943,7 @@ def test_validate_param_values_warnings_errors():
     """
     pol1 = Policy()
     ref1 = {2020: {'_ID_Medical_frt': [0.05]}}
-    pol1.implement_reform(ref1, print_warnings=False, raise_errors=False)
+    pol1.implement_reform(ref1, print_warnings=True, raise_errors=False)
     assert len(pol1.parameter_warnings) > 0
     pol2 = Policy()
     ref2 = {2021: {'_ID_Charity_crt_all': [0.61]}}

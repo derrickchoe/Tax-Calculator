@@ -5,9 +5,9 @@ from taxcalc.calculate import *
 from taxcalc.policy import *
 from taxcalc.behavior import *
 from taxcalc.consumption import *
-from taxcalc.filings import *
 from taxcalc.growfactors import *
 from taxcalc.growdiff import *
+from taxcalc.growmodel import *
 from taxcalc.records import *
 from taxcalc.simpletaxio import *
 from taxcalc.taxcalcio import *

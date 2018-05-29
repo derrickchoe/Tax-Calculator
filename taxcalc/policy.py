@@ -9,8 +9,8 @@ from __future__ import print_function
 import six
 import numpy as np
 from taxcalc.parameters import ParametersBase
-from taxcalc.growfactors import Growfactors
-from taxcalc.growdiff import Growdiff
+from taxcalc.growfactors import GrowFactors
+from taxcalc.growdiff import GrowDiff
 
 
 class Policy(ParametersBase):
@@ -22,12 +22,8 @@ class Policy(ParametersBase):
 
     Parameters
     ----------
-    gfactors: Growfactors class instance
+    gfactors: GrowFactors class instance
         containing price inflation rates and wage growth rates
-
-    parameter_dict: dictionary of PARAM:DESCRIPTION pairs
-        dictionary of policy parameters; if None, default policy
-        parameters are read from the current_law_policy.json file.
 
     start_year: integer
         first calendar year for historical policy parameters.
@@ -39,8 +35,8 @@ class Policy(ParametersBase):
     Raises
     ------
     ValueError:
-        if gfactors is not a Growfactors class instance.
-        if parameter_dict is neither None nor a dictionary.
+        if gfactors is not a GrowFactors class instance.
+        if start_year is less than JSON_START_YEAR.
         if num_years is less than one.
 
     Returns
@@ -61,15 +57,17 @@ class Policy(ParametersBase):
         super(Policy, self).__init__()
 
         if gfactors is None:
-            self._gfactors = Growfactors()
-        elif isinstance(gfactors, Growfactors):
+            self._gfactors = GrowFactors()
+        elif isinstance(gfactors, GrowFactors):
             self._gfactors = gfactors
         else:
-            raise ValueError('gfactors is not None or a Growfactors instance')
+            raise ValueError('gfactors is not None or a GrowFactors instance')
 
         # read default parameters
         self._vals = self._params_dict_from_json_file()
 
+        if start_year < Policy.JSON_START_YEAR:
+            raise ValueError('start_year cannot be less than JSON_START_YEAR')
         if num_years < 1:
             raise ValueError('num_years cannot be less than one')
 
@@ -97,7 +95,8 @@ class Policy(ParametersBase):
         """
         return self._wage_growth_rates
 
-    def implement_reform(self, reform, print_warnings=True, raise_errors=True):
+    def implement_reform(self, reform,
+                         print_warnings=False, raise_errors=True):
         """
         Implement multi-year policy reform and leave current_year unchanged.
 
@@ -107,14 +106,12 @@ class Policy(ParametersBase):
             see Notes to Parameters _update method for info on MODS structure
 
         print_warnings: boolean
-            if True (the default), prints warnings when parameter_warnings
-                    exists;
+            if True, prints warnings when parameter_warnings exists;
             if False, does not print warnings when parameter_warnings exists
                     and leaves warning handling to caller of implement_reform.
 
         raise_errors: boolean
-            if True (the default), raises ValueError when parameter_errors
-                    exists;
+            if True, raises ValueError when parameter_errors exists;
             if False, does not raise ValueError when parameter_errors exists
                     and leaves error handling to caller of implement_reform.
 
@@ -228,18 +225,6 @@ class Policy(ParametersBase):
         if self.parameter_errors and raise_errors:
             raise ValueError('\n' + self.parameter_errors)
 
-    def current_law_version(self):
-        """
-        Return Policy object same as self except with current-law policy.
-        """
-        startyear = self.start_year
-        numyears = self.num_years
-        clv = Policy(self._gfactors,
-                     start_year=startyear,
-                     num_years=numyears)
-        clv.set_year(self.current_year)
-        return clv
-
     JSON_REFORM_SUFFIXES = {
         # MARS-indexed suffixes and list index numbers
         'single': 0,
@@ -314,11 +299,11 @@ class Policy(ParametersBase):
             Return param_base:year dictionary having only suffix parameters.
             """
             if bool(growdiff_baseline_dict) or bool(growdiff_response_dict):
-                gdiff_baseline = Growdiff()
+                gdiff_baseline = GrowDiff()
                 gdiff_baseline.update_growdiff(growdiff_baseline_dict)
-                gdiff_response = Growdiff()
+                gdiff_response = GrowDiff()
                 gdiff_response.update_growdiff(growdiff_response_dict)
-                growfactors = Growfactors()
+                growfactors = GrowFactors()
                 gdiff_baseline.apply_to(growfactors)
                 gdiff_response.apply_to(growfactors)
             else:
@@ -522,7 +507,6 @@ class Policy(ParametersBase):
         # pylint: disable=too-many-nested-blocks
         rounding_error = 100.0
         # above handles non-rounding of inflation-indexed parameter values
-        clp = self.current_law_version()
         parameters = sorted(parameters_set)
         syr = Policy.JSON_START_YEAR
         for pname in parameters:
@@ -532,7 +516,7 @@ class Policy(ParametersBase):
             for vop, vval in self._vals[pname]['range'].items():
                 if isinstance(vval, six.string_types):
                     if vval == 'default':
-                        vvalue = getattr(clp, pname)
+                        vvalue = Policy._default_value(pname)
                         if vop == 'min':
                             vvalue -= rounding_error
                         # the follow branch can never be reached, so it
@@ -584,5 +568,39 @@ class Policy(ParametersBase):
                                                        pvalue[idx],
                                                        vvalue[idx]) + '\n'
                             )
-        del clp
         del parameters
+
+    @staticmethod
+    def _default_value(pname):
+        """
+        Return "default" values for specified parameter's warning logic.
+
+        The "default" values are indexed 2013 values for each year 2013+.
+        Only if users of PUF data try to specify a lower value than these
+        "default" values will they get a warning message.  This is all
+        necessary because, at the moment, PUF data do not contain positive
+        itemizable expense amounts for non-itemizers, which means lowering
+        the standard deduction parameters below their indexed 2013 value
+        will produce unexpected results.
+        """
+        assert pname == '_STD' or pname == '_STD_Dep'
+        clp = Policy()
+        irates = clp.inflation_rates()
+        if pname == '_STD':
+            dval = getattr(clp, '_STD')[0]
+        elif pname == '_STD_Dep':
+            dval = getattr(clp, '_STD_Dep')[0]
+        dvalues = list()
+        dvalues.append(dval.round())
+        for year in range(clp.start_year, clp.end_year):
+            inflation_factor = 1.0 + irates[year - clp.start_year]
+            dval *= inflation_factor  # value for year+1
+            dvalues.append(dval.round())
+        if pname == '_STD':
+            np_dvalues = np.vstack(dvalues)
+        elif pname == '_STD_Dep':
+            np_dvalues = np.asarray(dvalues)
+        del clp
+        del irates
+        del dvalues
+        return np_dvalues
