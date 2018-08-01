@@ -80,30 +80,26 @@ def test_agg(tests_path, puf_fullsample):
     rn_seed = 2222  # to ensure sub-sample is always the same
     subfrac = 0.05  # sub-sample fraction
     subsample = fullsample.sample(frac=subfrac, random_state=rn_seed)
-    rec_subsample = Records(data=subsample)
-    calc_subsample = Calculator(policy=baseline_policy, records=rec_subsample)
+    recs_subsample = Records(data=subsample)
+    calc_subsample = Calculator(policy=baseline_policy, records=recs_subsample)
     adt_subsample = calc_subsample.diagnostic_table(nyrs)
     # compare combined tax liability from full and sub samples for each year
     taxes_subsample = adt_subsample.loc["Combined Liability ($b)"]
-    reltol = 0.01  # maximum allowed relative difference in tax liability
-    if not np.allclose(taxes_subsample, taxes_fullsample,
-                       atol=0.0, rtol=reltol):
-        msg = 'PUFCSV AGG RESULTS DIFFER IN SUB-SAMPLE AND FULL-SAMPLE\n'
-        msg += 'WHEN subfrac={:.3f}, rtol={:.4f}, seed={}\n'.format(subfrac,
-                                                                    reltol,
-                                                                    rn_seed)
-        it_sub = np.nditer(taxes_subsample, flags=['f_index'])
-        it_all = np.nditer(taxes_fullsample, flags=['f_index'])
-        while not it_sub.finished:
-            cyr = it_sub.index + calc_start_year
-            tax_sub = float(it_sub[0])
-            tax_all = float(it_all[0])
-            reldiff = abs(tax_sub - tax_all) / abs(tax_all)
-            if reldiff > reltol:
-                msgstr = ' year,sub,full,reldiff= {}\t{:.2f}\t{:.2f}\t{:.4f}\n'
-                msg += msgstr.format(cyr, tax_sub, tax_all, reldiff)
-            it_sub.iternext()
-            it_all.iternext()
+    msg = ''
+    for cyr in range(calc_start_year, calc_start_year + nyrs):
+        reltol = 0.01  # maximum allowed relative difference in tax liability
+        if not np.allclose(taxes_subsample[cyr], taxes_fullsample[cyr],
+                           atol=0.0, rtol=reltol):
+            reldiff = (taxes_subsample[cyr] / taxes_fullsample[cyr]) - 1.
+            line1 = '\nPUFCSV AGG SUB-vs-FULL RESULTS DIFFER IN {}'
+            line2 = '\n  when subfrac={:.3f}, rtol={:.4f}, seed={}'
+            line3 = '\n  with sub={:.3f}, full={:.3f}, rdiff={:.4f}'
+            msg += line1.format(cyr)
+            msg += line2.format(subfrac, reltol, rn_seed)
+            msg += line3.format(taxes_subsample[cyr],
+                                taxes_fullsample[cyr],
+                                reldiff)
+    if msg:
         raise ValueError(msg)
 
 
@@ -343,22 +339,6 @@ def test_puf_availability(tests_path, puf_path):
     # check that pufvars and recvars sets are the same
     assert (pufvars - recvars) == set()
     assert (recvars - pufvars) == set()
-
-
-@pytest.mark.requires_pufcsv
-@pytest.mark.xfail
-def test_ubi_n_variables(puf_path):
-    """
-    Ensure that the three UBI n* variables add up to XTOT variable,
-    recognizing that XTOT values are often capped in the IRS-SOI PUF,
-    so that XTOT < NSUM might not indicate any data inconsistency.
-    """
-    pufdf = pd.read_csv(puf_path)
-    xtot = pufdf['XTOT']
-    nsum = pufdf['nu18'] + pufdf['n1820'] + pufdf['n21']
-    if not np.sum(xtot > nsum) == 0:
-        print('number xtot > nsum is:', np.sum(xtot > nsum))
-        assert 'XTOT' <= '(nu18+n1820+n21)'
 
 
 @pytest.mark.requires_pufcsv

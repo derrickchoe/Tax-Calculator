@@ -140,7 +140,10 @@ def cli_tc_main():
     args = parser.parse_args()
     # show Tax-Calculator version and quit if --version option specified
     if args.version:
-        sys.stdout.write('Tax-Calculator {}\n'.format(tc.__version__))
+        version = tc.__version__
+        if version == 'unknown':
+            version = 'locally.generated.package'
+        sys.stdout.write('Tax-Calculator {}\n'.format(version))
         return 0
     # write test input and expected output files if --test option specified
     if args.test:
@@ -235,7 +238,7 @@ def _write_expected_test_output():
         ifile.write(input_data)
     expected_output_data = (
         'RECID,YEAR,WEIGHT,INCTAX,LSTAX,PAYTAX\n'
-        '1,2018,0.00,123.51,0.00,6120.00\n'
+        '1,2018,0.00,122.78,0.00,6120.00\n'
         '2,2018,0.00,28879.00,0.00,22167.43\n'
     )
     with open(EXPECTED_TEST_OUTPUT_FILENAME, 'w') as ofile:
