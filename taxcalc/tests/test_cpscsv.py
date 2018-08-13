@@ -2,11 +2,11 @@
 Tests of Tax-Calculator using cps.csv input.
 
 Note that the CPS-related files that are required to run this program
-have been constructed by the Tax-Calculator development from publicly
+have been constructed by the Tax-Calculator development team from publicly
 available Census data files.  Hence, the CPS-related files are freely
 available and are part of the Tax-Calculator repository.
 
-Read tax-calculator/TESTING.md for details.
+Read Tax-Calculator/TESTING.md for details.
 """
 # CODING-STYLE CHECKS:
 # pycodestyle test_cpscsv.py
@@ -36,7 +36,7 @@ def test_agg(tests_path, cps_fullsample):
     baseline_policy = Policy()
     baseline_policy.implement_reform(pre_tcja['policy'])
     # create a Records object (rec) containing all cps.csv input records
-    recs = Records.cps_constructor(data=cps_fullsample, no_benefits=True)
+    recs = Records.cps_constructor(data=cps_fullsample)
     # create a Calculator object using baseline policy and cps records
     calc = Calculator(policy=baseline_policy, records=recs)
     calc_start_year = calc.current_year
@@ -73,7 +73,7 @@ def test_agg(tests_path, cps_fullsample):
     rn_seed = 180  # to ensure sub-sample is always the same
     subfrac = 0.03  # sub-sample fraction
     subsample = cps_fullsample.sample(frac=subfrac, random_state=rn_seed)
-    recs_subsample = Records.cps_constructor(data=subsample, no_benefits=True)
+    recs_subsample = Records.cps_constructor(data=subsample)
     calc_subsample = Calculator(policy=baseline_policy, records=recs_subsample)
     adt_subsample = calc_subsample.diagnostic_table(nyrs)
     # compare combined tax liability from full and sub samples for each year
