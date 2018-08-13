@@ -111,7 +111,6 @@ def fixture_reform_xx():
             '_AMT_CG_brk3': [[500000, 500000, 500000, 500000, 500000]],
             '_AGI_surtax_thd': [[1000000, 1000000, 1000000, 1000000, 1000000]],
             '_AGI_surtax_trt': [0.5],
-<<<<<<< Updated upstream
             '_ID_AmountCap_rt': [0.9],
             '_II_brk7': [[1000000, 1000000, 1000000, 1000000, 1000000]],
             '_ID_BenefitCap_rt': [0.3],
@@ -120,22 +119,11 @@ def fixture_reform_xx():
             '_ID_Casualty_hc': [0.1],
             '_ID_Miscellaneous_hc': [0.1],
             '_ID_prt': [0.03],
-<<<<<<< HEAD
-            '_ID_crt': [0.8]
-=======
-            '_ID_AmountCap_rt': [0.5],
-            '_II_brk7': [[1000000, 1000000, 1000000, 1000000, 1000000]],
-            '_ID_BenefitCap_rt': [0.5],
-            '_PT_rt7': [.35],
-            '_II_em': [1000]
->>>>>>> Stashed changes
-=======
             '_ID_crt': [0.8],
             '_CR_Charity_rt': [0.4],
             '_CR_Charity_f': [[5000, 5000, 5000, 5000, 5000]],
             '_CR_Charity_frt': [0.5],
             '_CR_SchR_hc': [0.5]
->>>>>>> upstream/master
         }
     }
     return _reform_xx
