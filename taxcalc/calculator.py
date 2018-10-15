@@ -2,37 +2,38 @@
 Tax-Calculator federal tax Calculator class.
 """
 # CODING-STYLE CHECKS:
-# pycodestyle calculate.py
-# pylint --disable=locally-disabled calculate.py
+# pycodestyle calculator.py
+# pylint --disable=locally-disabled calculator.py
 #
 # pylint: disable=invalid-name,no-value-for-parameter,too-many-lines
 
 import os
-import json
 import re
 import copy
+import urllib
 import numpy as np
 import pandas as pd
-from taxcalc.functions import (TaxInc, SchXYZTax, GainsTax, AGIsurtax,
-                               NetInvIncTax, AMT, EI_PayrollTax, Adj,
-                               DependentCare, ALD_InvInc_ec_base, CapGains,
-                               SSBenefits, UBI, AGI, ItemDedCap, ItemDed,
-                               StdDed, AdditionalMedicareTax, F2441, EITC,
-                               ChildDepTaxCredit, AdditionalCTC, CTC_new,
-                               PersonalTaxCredit, SchR,
-                               AmOppCreditParts, EducationTaxCredit,
-                               CharityCredit,
-                               NonrefundableCredits, C1040, IITAX,
-                               BenefitSurtax, BenefitLimitation,
-                               FairShareTax, LumpSumTax, BenefitPrograms,
-                               ExpandIncome, AfterTaxIncome)
+from taxcalc.calcfunctions import (TaxInc, SchXYZTax, GainsTax, AGIsurtax,
+                                   NetInvIncTax, AMT, EI_PayrollTax, Adj,
+                                   DependentCare, ALD_InvInc_ec_base, CapGains,
+                                   SSBenefits, UBI, AGI, ItemDedCap, ItemDed,
+                                   StdDed, AdditionalMedicareTax, F2441, EITC,
+                                   ChildDepTaxCredit, AdditionalCTC, CTC_new,
+                                   PersonalTaxCredit, SchR,
+                                   AmOppCreditParts, EducationTaxCredit,
+                                   CharityCredit,
+                                   NonrefundableCredits, C1040, IITAX,
+                                   BenefitSurtax, BenefitLimitation,
+                                   FairShareTax, LumpSumTax, BenefitPrograms,
+                                   ExpandIncome, AfterTaxIncome)
 from taxcalc.policy import Policy
 from taxcalc.records import Records
 from taxcalc.consumption import Consumption
 from taxcalc.behavior import Behavior
 from taxcalc.growdiff import GrowDiff
 from taxcalc.growfactors import GrowFactors
-from taxcalc.utils import (DIST_VARIABLES, create_distribution_table,
+from taxcalc.utils import (json2dict,
+                           DIST_VARIABLES, create_distribution_table,
                            DIFF_VARIABLES, create_difference_table,
                            create_diagnostic_table,
                            ce_aftertax_expanded_income,
@@ -203,31 +204,32 @@ class Calculator(object):
 
     def dataframe(self, variable_list):
         """
-        Return pandas DataFrame containing the listed variables from embedded
+        Return Pandas DataFrame containing the listed variables from embedded
         Records object.
         """
         assert isinstance(variable_list, list)
         arys = [self.array(vname) for vname in variable_list]
-        pdf = pd.DataFrame(data=np.column_stack(arys), columns=variable_list)
+        dframe = pd.DataFrame(data=np.column_stack(arys),
+                              columns=variable_list)
         del arys
-        return pdf
+        return dframe
 
     def distribution_table_dataframe(self):
         """
         Return pandas DataFrame containing the DIST_TABLE_COLUMNS variables
         from embedded Records object.
         """
-        pdf = self.dataframe(DIST_VARIABLES)
+        dframe = self.dataframe(DIST_VARIABLES)
         # weighted count of itemized-deduction returns
-        pdf['num_returns_ItemDed'] = pdf['s006'].where(
-            pdf['c04470'] > 0., 0.)
+        dframe['num_returns_ItemDed'] = dframe['s006'].where(
+            dframe['c04470'] > 0., 0.)
         # weighted count of standard-deduction returns
-        pdf['num_returns_StandardDed'] = pdf['s006'].where(
-            pdf['standard'] > 0., 0.)
+        dframe['num_returns_StandardDed'] = dframe['s006'].where(
+            dframe['standard'] > 0., 0.)
         # weight count of returns with positive Alternative Minimum Tax (AMT)
-        pdf['num_returns_AMT'] = pdf['s006'].where(
-            pdf['c09600'] > 0., 0.)
-        return pdf
+        dframe['num_returns_AMT'] = dframe['s006'].where(
+            dframe['c09600'] > 0., 0.)
+        return dframe
 
     def array(self, variable_name, variable_value=None):
         """
@@ -815,7 +817,7 @@ class Calculator(object):
             - 'agi': adjusted gross income, AGI (c00100)
 
             - 'expanded_income': broader than AGI (see definition in
-                                 functions.py file).
+                                 calcfunctions.py file).
 
         dollar_weighting : boolean
             False implies both income_measure percentiles on x axis
@@ -1138,6 +1140,9 @@ class Calculator(object):
         in which case the file reading is skipped and the appropriate
         read_json_*_text method is called.
 
+        Either of the two function arguments may also be valid URL strings that
+        begin with http and point to valid JSON files hosted online.
+
         The reform file contents or JSON string must be like this:
         {"policy": {...}}
         and the assump file contents or JSON string must be like this:
@@ -1162,6 +1167,8 @@ class Calculator(object):
         elif isinstance(assump, str):
             if os.path.isfile(assump):
                 txt = open(assump, 'r').read()
+            elif assump.startswith('http'):
+                txt = urllib.request.urlopen(assump).read().decode()
             else:
                 txt = assump
             (cons_dict,
@@ -1177,6 +1184,8 @@ class Calculator(object):
         elif isinstance(reform, str):
             if os.path.isfile(reform):
                 txt = open(reform, 'r').read()
+            elif reform.startswith('http'):
+                txt = urllib.request.urlopen(reform).read().decode()
             else:
                 txt = reform
             rpol_dict = (
@@ -1501,7 +1510,7 @@ class Calculator(object):
 
         The {...}  object may be empty (that is, be {}), or
         may contain one or more pairs with parameter string primary keys
-        and string years as secondary keys.  See tests/test_calculate.py for
+        and string years as secondary keys.  See tests/test_calculator.py for
         an extended example of a commented JSON policy reform text
         that can be read by this method.
 
@@ -1513,22 +1522,7 @@ class Calculator(object):
         # strip out //-comments without changing line numbers
         json_str = re.sub('//.*', ' ', text_string)
         # convert JSON text into a Python dictionary
-        try:
-            raw_dict = json.loads(json_str)
-        except ValueError as valerr:
-            msg = 'Policy reform text below contains invalid JSON:\n'
-            msg += str(valerr) + '\n'
-            msg += 'Above location of the first error may be approximate.\n'
-            msg += 'The invalid JSON reform text is between the lines:\n'
-            bline = 'XX----.----1----.----2----.----3----.----4'
-            bline += '----.----5----.----6----.----7'
-            msg += bline + '\n'
-            linenum = 0
-            for line in json_str.split('\n'):
-                linenum += 1
-                msg += '{:02d}{}'.format(linenum, line) + '\n'
-            msg += bline + '\n'
-            raise ValueError(msg)
+        raw_dict = json2dict(json_str)
         # check key contents of dictionary
         actual_keys = set(raw_dict.keys())
         missing_keys = Calculator.REQUIRED_REFORM_KEYS - actual_keys
@@ -1562,12 +1556,12 @@ class Calculator(object):
 
         The {...}  object may be empty (that is, be {}), or
         may contain one or more pairs with parameter string primary keys
-        and string years as secondary keys.  See tests/test_calculate.py for
+        and string years as secondary keys.  See tests/test_calculator.py for
         an extended example of a commented JSON economic assumption text
         that can be read by this method.
 
         Note that an example is shown in the ASSUMP_CONTENTS string in
-        the tests/test_calculate.py file.
+        the tests/test_calculator.py file.
 
         Returned dictionaries (cons_dict, behv_dict, gdiff_baseline_dict,
         gdiff_respose_dict, growmodel_dict) have integer years as primary
@@ -1583,22 +1577,7 @@ class Calculator(object):
         # strip out //-comments without changing line numbers
         json_str = re.sub('//.*', ' ', text_string)
         # convert JSON text into a Python dictionary
-        try:
-            raw_dict = json.loads(json_str)
-        except ValueError as valerr:
-            msg = 'Economic assumption text below contains invalid JSON:\n'
-            msg += str(valerr) + '\n'
-            msg += 'Above location of the first error may be approximate.\n'
-            msg += 'The invalid JSON asssump text is between the lines:\n'
-            bline = 'XX----.----1----.----2----.----3----.----4'
-            bline += '----.----5----.----6----.----7'
-            msg += bline + '\n'
-            linenum = 0
-            for line in json_str.split('\n'):
-                linenum += 1
-                msg += '{:02d}{}'.format(linenum, line) + '\n'
-            msg += bline + '\n'
-            raise ValueError(msg)
+        raw_dict = json2dict(json_str)
         # check key contents of dictionary
         actual_keys = set(raw_dict.keys())
         missing_keys = Calculator.REQUIRED_ASSUMP_KEYS - actual_keys
