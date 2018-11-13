@@ -15,14 +15,15 @@ Tax-Calculator</h1>
 <p>This document tells you how to use Tax-Calculator, an open-source
 federal income and payroll tax simulation model, in Python scripts
 that you can run on your own computer.  Note that these recipes
-require Tax-Calculator release 0.21.0 or higher running on Python 3.6.
+require Tax-Calculator release 0.23.0 or higher running on Python 3.6.
 For other ways of using Tax-Calculator, see the
 <a href="https://open-source-economics.github.io/Tax-Calculator/">
 user documentation</a>, which this Cookbook assumes you have read.</p>
 
 <p>In order to write correct and effective Python scripts you need to be
 familiar with the public API of the Tax-Calculator library, which is available
-<a href="http://taxcalc.readthedocs.io/en/latest/public_api.html">here</a>.</p>
+<a href="https://taxcalc.readthedocs.io/en/latest/public_api.html">here</a>.
+</p>
 
 <h2>Cookbook Contents</h2>
 
@@ -60,11 +61,11 @@ following an existing recipe</p>
 
 <p>You need to setup your computer in certain ways in order to follow
 these recipes.  First, follow
-<a href="http://open-source-economics.github.io/Tax-Calculator/#cli-install-test">these instructions</a> on installing Anaconda and a taxcalc package on
+<a href="https://open-source-economics.github.io/Tax-Calculator/#cli-install-test">these instructions</a> on installing Anaconda and a taxcalc package on
 your computer. And second, install the recipes and ingredients in this
 cookbook on your computer.  There are several ways to do this.  If you
 have cloned the Tax-Calculator repository (see the
-<a href="http://taxcalc.readthedocs.io/en/latest/contributor_guide.html">
+<a href="https://taxcalc.readthedocs.io/en/latest/contributor_guide.html">
 Contributor Guide</a>), then the recipes are located in the
 <kbd>Tax-Calculator/docs/cookbook</kbd> directory.  If you haven't
 cloned the repository, you have a couple of choices. You can download
@@ -93,12 +94,12 @@ the exactly the <q>dish</q> you want. Remember to copy a recipe file
 and give it a new file name before you start to modify the recipe.</p>
 
 <p>The Calculator object is the central object in Tax-Calculator and
-it is created by passing four secondary objects (a Policy object, a
-Records object, a Behavior object, and a Consumption object) to the
+it is created by passing three secondary objects (a Policy object, a
+Records object, and a Consumption object) to the
 Calculator class constructor. When modifying a recipe, following a
 few rules will minimize the chance of running into problems.</p>
 
-<p>Fully specify Consumption, Behavior, Records, and Policy objects
+<p>Fully specify Policy, Records, and Consumption objects
 before passing them to the Calculator class constructor.</p>
 
 <p>After initializing a Calculator object, manipulate it using only
@@ -159,8 +160,8 @@ file before you make modifications to it.</p>
 <p>If you want to request a recipe that makes a new <q>dish</q>,
 create a new issue
 <a href="https://github.com/open-source-economics/Tax-Calculator/issues">here</a>
-providing details on what you want to make and why the existing
-recipes cannot be easily modified to make what you want.</p>
+providing details on what you want to make and why the existing recipes
+cannot be easily modified to make what you want.</p>
 
 <p>Also, please report, in the same way, any problems you experience
 following an existing recipe.</p>
@@ -235,15 +236,16 @@ to Tax Reform</h2>
 
 <p>This is an advanced recipe that should be followed only after
 mastering the <a href="#recipe00">basic recipe</a>.  This recipe
-shows how to analyze the behavioral responses to a tax reform.</p>
+shows how to analyze the behavioral responses to a tax reform using
+the Behavioral-Responses <kbd>behresp</kbd> package.  Before following
+this recipe, be sure to install the <kbd>behresp</kbd> package on your
+compter by executing this at the command prompt:
+<kbd>conda install -c PSLmodels behresp</kbd></p>
 
 <p><b>Ingredients</b></p>
 
 <p><a href="reformA.json.html" target="_blank">Policy reform</a> in
 the <kbd>ingredients/reformA.json</kbd> file.</p>
-
-<p><a href="assumpA.json.html" target="_blank">Economic assumptions</a> in
-the <kbd>ingredients/assumpA.json</kbd> file.</p>
 
 <p><b>Instructions</b></p>
 

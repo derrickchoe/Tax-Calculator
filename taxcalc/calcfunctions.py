@@ -339,7 +339,7 @@ def SSBenefits(MARS, ymod, e02400, SS_thd50, SS_thd85,
     """
     if ymod < SS_thd50[MARS - 1]:
         c02500 = 0.
-    elif ymod >= SS_thd50[MARS - 1] and ymod < SS_thd85[MARS - 1]:
+    elif ymod < SS_thd85[MARS - 1]:
         c02500 = SS_percentage1 * min(ymod - SS_thd50[MARS - 1], e02400)
     else:
         c02500 = min(SS_percentage2 * (ymod - SS_thd85[MARS - 1]) +
@@ -1139,7 +1139,7 @@ def F2441(MARS, earned_p, earned_s, f2441, CDCC_c, e32800,
 
 
 @jit(nopython=True)
-def EITCamount(phasein_rate, earnings, max_amount,
+def EITCamount(basic_frac, phasein_rate, earnings, max_amount,
                phaseout_start, agi, phaseout_rate):
     """
     Returns EITC amount given specified parameters.
@@ -1147,7 +1147,8 @@ def EITCamount(phasein_rate, earnings, max_amount,
     EITC formula is not available on IRS forms or in IRS instructions;
     the extensive IRS EITC look-up table does not reveal the formula.
     """
-    eitc = min(phasein_rate * earnings, max_amount)
+    eitc = min((basic_frac * max_amount +
+                (1.0 - basic_frac) * phasein_rate * earnings), max_amount)
     if earnings > phaseout_start or agi > phaseout_start:
         eitcx = max(0., (max_amount - phaseout_rate *
                          max(0., max(earnings, agi) - phaseout_start)))
@@ -1160,7 +1161,7 @@ def EITC(MARS, DSI, EIC, c00100, e00300, e00400, e00600, c01000,
          e27200, age_head, age_spouse, earned, earned_p, earned_s,
          EITC_ps, EITC_MinEligAge, EITC_MaxEligAge, EITC_ps_MarriedJ,
          EITC_rt, EITC_c, EITC_prt, EITC_InvestIncome_c, EITC_indiv,
-         c59660):
+         EITC_basic_frac, c59660):
     """
     Computes EITC amount, c59660.
     """
@@ -1175,27 +1176,23 @@ def EITC(MARS, DSI, EIC, c00100, e00300, e00400, e00600, c01000,
             po_start = EITC_ps[EIC]
             if MARS == 2:
                 po_start += EITC_ps_MarriedJ[EIC]
-            eitc = EITCamount(EITC_rt[EIC], earned, EITC_c[EIC],
+            eitc = EITCamount(EITC_basic_frac,
+                              EITC_rt[EIC], earned, EITC_c[EIC],
                               po_start, c00100, EITC_prt[EIC])
             if EIC == 0:
                 # enforce age eligibility rule for those with no EITC-eligible
                 # kids assuming that an unknown age_* value implies EITC age
                 # eligibility
-                # pylint: disable=too-many-boolean-expressions
+                h_age_elig = EITC_MinEligAge <= age_head <= EITC_MaxEligAge
+                s_age_elig = EITC_MinEligAge <= age_spouse <= EITC_MaxEligAge
                 if MARS == 2:
-                    if (age_head == 0 or
-                            age_spouse == 0 or
-                            (age_head >= EITC_MinEligAge and
-                             age_head <= EITC_MaxEligAge) or
-                            (age_spouse >= EITC_MinEligAge and
-                             age_spouse <= EITC_MaxEligAge)):
+                    if (age_head == 0 or age_spouse == 0 or
+                            h_age_elig or s_age_elig):
                         c59660 = eitc
                     else:
                         c59660 = 0.
                 else:  # if MARS != 2
-                    if (age_head == 0 or
-                            (age_head >= EITC_MinEligAge and
-                             age_head <= EITC_MaxEligAge)):
+                    if (age_head == 0 or h_age_elig):
                         c59660 = eitc
                     else:
                         c59660 = 0.
@@ -1204,11 +1201,13 @@ def EITC(MARS, DSI, EIC, c00100, e00300, e00400, e00600, c01000,
     else:
         # individual EITC rather than a filing-unit EITC
         # .. calculate eitc amount for taxpayer
-        eitc_p = EITCamount(EITC_rt[EIC], earned_p, EITC_c[EIC],
+        eitc_p = EITCamount(EITC_basic_frac,
+                            EITC_rt[EIC], earned_p, EITC_c[EIC],
                             EITC_ps[EIC], earned_p, EITC_prt[EIC])
         # .. calculate eitc amount for spouse
         if MARS == 2:
-            eitc_s = EITCamount(EITC_rt[EIC], earned_s, EITC_c[EIC],
+            eitc_s = EITCamount(EITC_basic_frac,
+                                EITC_rt[EIC], earned_s, EITC_c[EIC],
                                 EITC_ps[EIC], earned_s, EITC_prt[EIC])
         else:
             eitc_s = 0.
@@ -1359,7 +1358,7 @@ def SchR(age_head, age_spouse, MARS, c00100,
         elif MARS == 3:
             schr12 = 3750.
             schr15 = 5000.
-        elif MARS == 1 or MARS == 4:
+        elif MARS in (1, 4):
             schr12 = 5000.
             schr15 = 7500.
         else:
@@ -1581,9 +1580,10 @@ def AdditionalCTC(n24, prectc, earned, c07220, ptax_was,
         c82920 = max(0., c82910 - c82915)
         c82937 = max(c82890, c82920)
     # Part II of 2005 Form 8812
-    if n24 > 0 and n24 < ACTC_ChildNum and c82890 > 0:
-        c82940 = min(c82890, c82935)
-    if n24 >= ACTC_ChildNum:
+    if n24 < ACTC_ChildNum:
+        if n24 > 0 and c82890 > 0:
+            c82940 = min(c82890, c82935)
+    else:  # if n24 >= ACTC_ChildNum
         if c82890 >= c82935:
             c82940 = c82935
         else:
@@ -1749,8 +1749,6 @@ def BenefitLimitation(calc):
     deductible expenses.
     """
     if calc.policy_param('ID_BenefitCap_rt') != 1.:
-        # pylint: disable=no-member
-        # (above pylint comment eliminates bogus np.maximum warnings)
         benefit = ComputeBenefit(calc,
                                  calc.policy_param('ID_BenefitCap_Switch'))
         # Calculate total deductible expenses under the cap

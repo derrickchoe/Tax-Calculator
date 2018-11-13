@@ -17,7 +17,7 @@ federal income and payroll tax simulation model.  The two ways of
 using Tax-Calculator described here require no computer programming.
 If you are interested in Python programming with Tax-Calculator, you
 should read the tested recipes in our
-<a href="http://open-source-economics.github.io/Tax-Calculator/cookbook.html">
+<a href="https://open-source-economics.github.io/Tax-Calculator/cookbook.html">
 Tax-Calculator Cookbook</a>. If you want to participate in the
 development of Tax-Calculator &mdash; by asking a question, reporting
 a bug, improving the documentation or making an enhancement to the
@@ -40,27 +40,32 @@ ensure you are viewing the most recent version of this page rather
 than an older version that your browser has saved in its cache of
 previously visited pages.</i></p>
 
+<p><a href="https://github.com/open-source-economics/Tax-Calculator/blob/master/RELEASES.md#2018-11-13-release-0230">Behavior class is going away soon</a>
+and being replaced by the Behavioral-Responses <kbd>behresp</kbd> package,
+the use of which is demonstrated in
+<a href="https://open-source-economics.github.io/Tax-Calculator/cookbook.html">Cookbook</a> recipe 2</p>
+
+<p><a href="https://github.com/open-source-economics/Tax-Calculator/blob/master/RELEASES.md#2018-10-24-release-0220">Automatic scaling of table results</a>
+(so that Python scripts, and Cookbook recipes, do not need to change
+dollars into billions of dollars and filing units into millions of
+filing units) is available in Tax-Calculator release 0.22.0 and higher</p>
+  
 <p><a href="https://github.com/open-source-economics/Tax-Calculator/blob/master/RELEASES.md#2018-09-11-release-0210">Code changes so works only with
 Python 3.6 plus minor PUF data change</a> are available in Tax-Calculator
 release 0.21.0 and higher.  <b>Note that release 0.21.0 is the first
-release that is compatible with only Python 3.6.</b>
+release that is compatible with only Python 3.6</b></p>
 
 <p><a href="https://github.com/open-source-economics/Tax-Calculator/blob/master/RELEASES.md#2018-09-06-release-0203">Both CPS and PUF data improvements</a>
 are available in Tax-Calculator release 0.20.3 and higher.
 <b>Note that release 0.20.3 is the last release that will be compatible
-with Python 2.7; subsequest releases will run only with Python 3.6.</b>
+with Python 2.7; subsequest releases will run only with Python 3.6</b></p>
 
 <p><a href="https://github.com/open-source-economics/Tax-Calculator/blob/master/RELEASES.md#2018-05-18-release-0200">Flexible <kbd>quantity_response</kbd>
 utility function</a> is available in Tax-Calculator release 0.20.0 and
-higher, and there is a new Cookbook recipe to illustrate its use
+higher, and there is a new Cookbook recipe to illustrate its use</p>
 
-<p><a href="https://github.com/open-source-economics/Tax-Calculator/blob/master/RELEASES.md#2018-04-19-release-0190">Fix data and logic bugs</a>
-so that the Child Tax Credit for those with kids age 17 is now lower
-and so that the income tax liability for those with large business
-losses is now lower in Tax-Calculator release 0.19.0 and higher
-  
 <p>To upgrade to the newest version of the Tax-Calculator package,
-execute this command:<br><kbd>conda update -c ospc taxcalc</kbd></p>
+execute this command:<br><kbd>conda update -c PSLmodels taxcalc</kbd></p>
 
 
 <h2 id="doc">Document Contents</h2>
@@ -79,7 +84,7 @@ assumptions</p>
 <h2 id="gui">TaxBrain GUI</h2>
 
 <p>You can use Tax-Calculator via a graphical user interface (GUI)
-provided by the <a href="http://www.ospc.org/taxbrain/">TaxBrain web
+provided by the <a href="https://www.ospc.org/taxbrain/">TaxBrain web
 application</a>.  This approach requires only an Internet connection
 and web browser on your computer.  TaxBrain (TB) uses a micro dataset
 to produce both aggregate and distributional reform estimates for each
@@ -164,8 +169,8 @@ clipboard uses invisible tab characters to separate the table's
 columns.</p>
 
 <p><b>CSV</b> downloads to your computer a CSV-formatted file
-containing the information in the table.  CSV-formatted files can be
-easily imported into any spreadsheet program.</p>
+containing the information in the table.  CSV-formatted files can
+be easily imported into any spreadsheet program.</p>
 
 <p><a href="#gui">Back to Section Contents</a></p>
 
@@ -262,7 +267,7 @@ well as the <kbd>Anaconda</kbd> phrase, the presence of which confirm
 that the installation went smoothly.</p>
 
 <p><b>Install the free taxcalc package</b> by entering the following:
-<pre>$ conda install -c ospc taxcalc</pre>
+<pre>$ conda install -c PSLmodels taxcalc</pre>
 Expected output should contain information about all the additional
 packages that Tax-Calculator needs.  After all that information has
 been shown on the screen, press the <kbd>y</kbd> key to proceed with
@@ -278,7 +283,7 @@ report your experience by creating a new issue at
 <a href="https://github.com/open-source-economics/Tax-Calculator/issues">
 this website</a> or by sending an email to one of the core maintainers
 of Tax-Calculator listed at the bottom of the <i>What is TaxBrain?</i>
-page at <a href="http://www.ospc.org/taxbrain/">this website</a>.
+page at <a href="https://www.ospc.org/taxbrain/">this website</a>.
 
 <p>If your installation passes the test, you are ready to begin using
 tc to analyze your tax reforms.  Continue reading this section for
@@ -291,7 +296,7 @@ the range of tc capabilities, enter the following:
 checking for new releases at
 <a href="https://github.com/open-source-economics/Tax-Calculator/blob/master/RELEASES.md#tax-calculator-release-history">this page</a> and, when there
 is a new release, executing this command:
-<pre>$ conda update -c ospc taxcalc</pre>
+<pre>$ conda update -c PSLmodels taxcalc</pre>
 The packages are usually available about an hour after the release.</p>
 
 <p>The basic idea of tc tax analysis is that each tax reform is
@@ -584,7 +589,7 @@ database table:  The CSV file is almost twice as large as the
 database, but it can be easily imported into a wide range of
 statistical packages.  The main advantage of the
 SQLite3 database is that the Anaconda Python distribution includes
-<a href="http://www.sqlite.org/cli.html">sqlite3</a> (or sqlite3.exe
+<a href="https://www.sqlite.org/cli.html">sqlite3</a> (or sqlite3.exe
 on Windows), a command-line tool that can be used to tabulate dump
 output using structured query language (SQL).  SQL is a language that
 you use to specify the tabulation you want and the SQL database
@@ -952,7 +957,7 @@ can be downloaded to your computer for storage or for additional
 analysis.</p>
 
 <p>The files on your computer can be uploaded
-at <a href="http://www.ospc.org/taxbrain/file/">the TaxBrain
+at <a href="https://www.ospc.org/taxbrain/file/">the TaxBrain
 file-upload page</a>.</p>
 
 <p>An extended example of how preliminary tax analysis on your

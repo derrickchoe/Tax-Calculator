@@ -6,14 +6,14 @@ Tax-Calculator federal tax policy Policy class.
 # pylint --disable=locally-disabled policy.py
 
 import numpy as np
-from taxcalc.parameters import ParametersBase
+from taxcalc.parameters import Parameters
 from taxcalc.growfactors import GrowFactors
 from taxcalc.growdiff import GrowDiff
 
 
-class Policy(ParametersBase):
+class Policy(Parameters):
     """
-    Policy is a subclass of the abstract ParametersBase class, and
+    Policy is a subclass of the abstract Parameters class, and
     therefore, inherits its methods (none of which are shown here).
 
     Constructor for the federal tax policy class.
@@ -23,19 +23,10 @@ class Policy(ParametersBase):
     gfactors: GrowFactors class instance
         containing price inflation rates and wage growth rates
 
-    start_year: integer
-        first calendar year for historical policy parameters.
-
-    num_years: integer
-        number of calendar years for which to specify policy parameter
-        values beginning with start_year.
-
     Raises
     ------
     ValueError:
-        if gfactors is not a GrowFactors class instance.
-        if start_year is less than JSON_START_YEAR.
-        if num_years is less than one.
+        if gfactors is not a GrowFactors class instance or None.
 
     Returns
     -------
@@ -50,10 +41,7 @@ class Policy(ParametersBase):
     # should increase LAST_BUDGET_YEAR by one every calendar year
     DEFAULT_NUM_YEARS = LAST_BUDGET_YEAR - JSON_START_YEAR + 1
 
-    def __init__(self,
-                 gfactors=None,
-                 start_year=JSON_START_YEAR,
-                 num_years=DEFAULT_NUM_YEARS):
+    def __init__(self, gfactors=None):
         super(Policy, self).__init__()
 
         if gfactors is None:
@@ -63,21 +51,15 @@ class Policy(ParametersBase):
         else:
             raise ValueError('gfactors is not None or a GrowFactors instance')
 
-        # read default parameters
+        # read default parameters and initialize
         self._vals = self._params_dict_from_json_file()
-
-        if start_year < Policy.JSON_START_YEAR:
-            raise ValueError('start_year cannot be less than JSON_START_YEAR')
-        if num_years < 1:
-            raise ValueError('num_years cannot be less than one')
-
-        syr = start_year
-        lyr = start_year + num_years - 1
+        syr = Policy.JSON_START_YEAR
+        lyr = Policy.LAST_BUDGET_YEAR
+        nyrs = Policy.DEFAULT_NUM_YEARS
         self._inflation_rates = self._gfactors.price_inflation_rates(syr, lyr)
-        self._apply_clp_cpi_offset(self._vals['_cpi_offset'], num_years)
+        self._apply_clp_cpi_offset(self._vals['_cpi_offset'], nyrs)
         self._wage_growth_rates = self._gfactors.wage_growth_rates(syr, lyr)
-
-        self.initialize(start_year, num_years)
+        self.initialize(syr, nyrs)
 
         self.parameter_warnings = ''
         self.parameter_errors = ''
@@ -257,7 +239,7 @@ class Policy(ParametersBase):
         return a JSON-equivalent dictionary containing constructed array
         parameters and containing no parameters with suffixes, odict.
         """
-
+        # pylint: disable=too-many-statements
         # define no_suffix function used only in this method
         def no_suffix(idict):
             """

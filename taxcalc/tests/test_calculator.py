@@ -6,6 +6,7 @@ import json
 from io import StringIO
 import tempfile
 import copy
+import urllib
 import pytest
 import numpy as np
 import pandas as pd
@@ -40,32 +41,19 @@ def fixture_rawinputfile():
             pass  # sometimes we can't remove a generated temporary file
 
 
-@pytest.fixture(scope='module', name='policyfile')
-def fixture_policyfile():
-    txt = """{"_almdep": {"value": [7150, 7250, 7400]},
-             "_almsep": {"value": [40400, 41050]},
-             "_rt5": {"value": [0.33 ]},
-             "_rt7": {"value": [0.396]}}"""
-    f = tempfile.NamedTemporaryFile(mode="a", delete=False)
-    f.write(txt + "\n")
-    f.close()
-    # Must close and then yield for Windows platform
-    yield f
-    os.remove(f.name)
-
-
 def test_make_calculator(cps_subsample):
-    syr = 2014
-    pol = Policy(start_year=syr, num_years=9)
-    assert pol.current_year == syr
+    start_year = Policy.JSON_START_YEAR
+    sim_year = 2018
+    pol = Policy()
+    assert pol.current_year == start_year
     rec = Records.cps_constructor(data=cps_subsample)
     consump = Consumption()
-    consump.update_consumption({syr: {'_MPC_e20400': [0.05]}})
-    assert consump.current_year == Consumption.JSON_START_YEAR
+    consump.update_consumption({sim_year: {'_MPC_e20400': [0.05]}})
+    assert consump.current_year == start_year
     calc = Calculator(policy=pol, records=rec,
                       consumption=consump, behavior=Behavior())
-    assert calc.current_year == syr
-    assert calc.records_current_year() == syr
+    assert calc.current_year == Records.CPSCSV_YEAR
+    assert calc.records_current_year() == Records.CPSCSV_YEAR
     # test incorrect Calculator instantiation:
     with pytest.raises(ValueError):
         Calculator(policy=None, records=rec)
@@ -223,8 +211,7 @@ def test_calculator_mtr_when_PT_rates_differ():
 
 def test_make_calculator_increment_years_first(cps_subsample):
     # create Policy object with policy reform
-    syr = 2013
-    pol = Policy(start_year=syr)
+    pol = Policy()
     reform = {2015: {}, 2016: {}}
     std5 = 2000
     reform[2015]['_STD_Aged'] = [[std5, std5, std5, std5, std5]]
@@ -237,6 +224,7 @@ def test_make_calculator_increment_years_first(cps_subsample):
     calc = Calculator(policy=pol, records=rec)
     # compare expected policy parameter values with those embedded in calc
     irates = pol.inflation_rates()
+    syr = Policy.JSON_START_YEAR
     irate2015 = irates[2015 - syr]
     irate2016 = irates[2016 - syr]
     std6 = std5 * (1.0 + irate2015)
@@ -430,7 +418,7 @@ def fixture_reform_file():
 
 
 ASSUMP_CONTENTS = """
-// Example of assump file suitable for the read_json_param_objects().
+// Example of JSON assump file suitable for read_json_param_objects().
 // This JSON file can contain any number of trailing //-style comments, which
 // will be removed before the contents are converted from JSON to a dictionary.
 // Within each "behavior", "consumption" and "growth" object, the
@@ -1104,3 +1092,47 @@ def test_ce_aftertax_income(cps_subsample):
     calc2 = Calculator(policy=pol, records=rec)
     res = calc1.ce_aftertax_income(calc2)
     assert isinstance(res, dict)
+
+
+ASSUMPTION_FILE_CONTENT = """
+// Example of JSON assump file suitable for read_json_assumptions().
+{
+  "BE_sub": {"2018": -0.05, "2021": -0.25},
+  "BE_inc": {"2020": 0.10},
+  "BE_cg": {"2022": -0.70}
+}
+"""
+
+
+@pytest.fixture(scope='module', name='assumption_file')
+def fixture_assumption_file():
+    """
+    Temporary assumption file for read_json_assumptions() function.
+    """
+    afile = tempfile.NamedTemporaryFile(mode='a', delete=False)
+    afile.write(ASSUMPTION_FILE_CONTENT)
+    afile.close()
+    # must close and then yield for Windows platform
+    yield afile
+    if os.path.isfile(afile.name):
+        try:
+            os.remove(afile.name)
+        except OSError:
+            pass  # sometimes we can't remove a generated temporary file
+
+
+def test_read_json_assumptions(assumption_file):
+    """
+    Test Calculator.read_json_assumptions() function.
+    """
+    assert isinstance(Calculator.read_json_assumptions(None), dict)
+    with pytest.raises(ValueError):
+        Calculator.read_json_assumptions(list())
+    with pytest.raises(urllib.request.URLError):
+        Calculator.read_json_assumptions('http://unknown-url')
+    assump_filename = assumption_file.name
+    file_dict = Calculator.read_json_assumptions(assump_filename)
+    assert isinstance(file_dict, dict)
+    text_dict = Calculator.read_json_assumptions(ASSUMPTION_FILE_CONTENT)
+    assert isinstance(text_dict, dict)
+    assert text_dict == file_dict

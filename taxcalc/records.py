@@ -9,10 +9,10 @@ import os
 import numpy as np
 import pandas as pd
 from taxcalc.growfactors import GrowFactors
-from taxcalc.utils import read_egg_csv, read_egg_json, json2dict
+from taxcalc.utils import read_egg_csv, read_egg_json, json_to_dict
 
 
-class Records(object):
+class Records():
     """
     Constructor for the tax-filing-unit Records class.
 
@@ -259,7 +259,7 @@ class Records(object):
         if os.path.exists(var_info_path):
             with open(var_info_path) as vfile:
                 json_text = vfile.read()
-            vardict = json2dict(json_text)
+            vardict = json_to_dict(json_text)
         else:
             # cannot call read_egg_ function in unit tests
             vardict = read_egg_json(
@@ -285,12 +285,25 @@ class Records(object):
         return vardict
 
     # specify various sets of variable names
-    INTEGER_READ_VARS = None
-    MUST_READ_VARS = None
-    USABLE_READ_VARS = None
-    CALCULATED_VARS = None
-    CHANGING_CALCULATED_VARS = None
-    INTEGER_VARS = None
+    INTEGER_READ_VARS = set()
+    MUST_READ_VARS = set()
+    USABLE_READ_VARS = set()
+    CALCULATED_VARS = set()
+    CHANGING_CALCULATED_VARS = set()
+    INTEGER_VARS = set()
+
+    @staticmethod
+    def read_cps_data():
+        """
+        Return data in cps.csv.gz as a Pandas DataFrame.
+        """
+        fname = os.path.join(Records.CUR_PATH, 'cps.csv.gz')
+        if os.path.isfile(fname):
+            cpsdf = pd.read_csv(fname)
+        else:
+            # cannot call read_egg_ function in unit tests
+            cpsdf = read_egg_csv(fname)  # pragma: no cover
+        return cpsdf
 
     # ----- begin private methods of Records class -----
 
@@ -417,7 +430,7 @@ class Records(object):
         Specifies exact array depending on boolean value of exact_calcs.
         """
         # pylint: disable=too-many-statements,too-many-branches
-        if Records.INTEGER_VARS is None:
+        if Records.INTEGER_VARS == set():
             Records.read_var_info()
         # read specified data
         if isinstance(data, pd.DataFrame):

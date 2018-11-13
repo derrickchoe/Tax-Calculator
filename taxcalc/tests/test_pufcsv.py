@@ -47,7 +47,7 @@ def test_agg(tests_path, puf_fullsample):
     adt = calc.diagnostic_table(nyrs)
     taxes_fullsample = adt.loc["Combined Liability ($b)"]
     # convert adt results to a string with a trailing EOL character
-    adtstr = adt.to_string() + '\n'
+    adtstr = adt.to_string(float_format='%8.1f') + '\n'
     # create actual and expected lists of diagnostic table lines
     actual = adtstr.splitlines(True)
     aggres_path = os.path.join(tests_path, 'pufcsv_agg_expect.txt')
@@ -331,7 +331,7 @@ def test_puf_availability(tests_path, puf_path):
         if 'taxdata_puf' in vdict.get('availability', ''):
             recvars.add(vname)
     # check that pufvars and recvars sets are the same
-    assert (pufvars - recvars) == set()
+    assert (pufvars - recvars) == set(['filer'])
     assert (recvars - pufvars) == set()
 
 

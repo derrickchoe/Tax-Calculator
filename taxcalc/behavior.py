@@ -8,15 +8,19 @@ Tax-Calculator elasticity-based behavioral-response Behavior class.
 import copy
 import numpy as np
 from taxcalc.policy import Policy
-from taxcalc.parameters import ParametersBase
+from taxcalc.parameters import Parameters
 
 
-class Behavior(ParametersBase):
+class Behavior(Parameters):
     """
-    Behavior is a subclass of the abstract ParametersBase class, and
+    Behavior is a subclass of the abstract Parameters class, and
     therefore, inherits its methods (none of which are shown here).
 
     Constructor for elasticity-based behavioral-response class.
+
+    WARNING: the Behavior class is deprecated and will be removed soon.
+    FUTURE: use the Behavioral-Responses behresp package OR
+            use the Tax-Calculator quantity_response function.
 
     Parameters
     ----------
@@ -45,6 +49,10 @@ class Behavior(ParametersBase):
     def __init__(self,
                  start_year=JSON_START_YEAR,
                  num_years=DEFAULT_NUM_YEARS):
+        print(('WARNING: the Behavior class is deprecated '
+               'and will be removed soon.'))
+        print('FUTURE: use the Behavioral-Responses behresp package OR')
+        print('        use the Tax-Calculator quantity_response function.')
         super(Behavior, self).__init__()
         self._vals = self._params_dict_from_json_file()
         if start_year < Policy.JSON_START_YEAR:
@@ -375,7 +383,6 @@ class Behavior(ParametersBase):
         _, iitax2, combined2 = calc2.mtr(mtr_of, wrt_full_compensation=True)
         if tax_type == 'combined':
             return (combined1, combined2)
-        elif tax_type == 'iitax':
+        if tax_type == 'iitax':
             return (iitax1, iitax2)
-        else:
-            raise ValueError('tax_type must be "combined" or "iitax"')
+        raise ValueError('tax_type must be "combined" or "iitax"')
