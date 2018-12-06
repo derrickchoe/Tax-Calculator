@@ -20,7 +20,7 @@ in a reform that introduces chained-CPI indexing).
 import math
 import copy
 import numpy as np
-from taxcalc.decorators import iterate_jit, jit
+from taxcalc.decorators import iterate_jit, JIT
 
 
 def BenefitPrograms(calc):
@@ -486,10 +486,8 @@ def ItemDedCap(e17500, e18400, e18500, e19200, e19800, e20100, e20400, g20500,
         gross_ded_amt += e20400
     if ID_AmountCap_Switch[5]:  # interest
         gross_ded_amt += e19200
-    if ID_AmountCap_Switch[6]:  # charitycash
+    if ID_AmountCap_Switch[6]:  # charity
         gross_ded_amt += e19800 + e20100
-    if ID_AmountCap_Switch[7]:  # charitynoncash
-        gross_ded_amt += e20100
 
     overage = max(0., gross_ded_amt - cap)
 
@@ -795,7 +793,7 @@ def TaxInc(c00100, standard, c04470, c04600, c04800, MARS,
     return c04800
 
 
-@jit(nopython=True)
+@JIT(nopython=True)
 def SchXYZ(taxable_income, MARS, e00900, e26270, e02000, e00200,
            PT_rt1, PT_rt2, PT_rt3, PT_rt4, PT_rt5,
            PT_rt6, PT_rt7, PT_rt8,
@@ -1007,9 +1005,9 @@ def AGIsurtax(c00100, MARS, AGI_surtax_trt, AGI_surtax_thd, taxbc, surtax):
 def AMT(e07300, dwks13, standard, f6251, c00100, c18300, taxbc,
         c04470, c17000, c20800, c21040, e24515, MARS, sep, dwks19,
         dwks14, c05700, e62900, e00700, dwks10, age_head, earned, cmbtp,
-        AMT_KT_c_Age, AMT_brk1,
+        AMT_child_em_c_age, AMT_brk1,
         AMT_em, AMT_prt, AMT_rt1, AMT_rt2,
-        AMT_Child_em, AMT_em_ps, AMT_em_pe,
+        AMT_child_em, AMT_em_ps, AMT_em_pe,
         AMT_CG_brk1, AMT_CG_brk2, AMT_CG_brk3, AMT_CG_rt1, AMT_CG_rt2,
         AMT_CG_rt3, AMT_CG_rt4, c05800, c09600, c62100):
     """
@@ -1038,8 +1036,8 @@ def AMT(e07300, dwks13, standard, f6251, c00100, c18300, taxbc,
     # Form 6251, Part II top
     line29 = max(0., AMT_em[MARS - 1] - AMT_prt *
                  max(0., c62100 - AMT_em_ps[MARS - 1]))
-    if age_head != 0 and age_head < AMT_KT_c_Age:
-        line29 = min(line29, earned + AMT_Child_em)
+    if age_head != 0 and age_head < AMT_child_em_c_age:
+        line29 = min(line29, earned + AMT_child_em)
     line30 = max(0., c62100 - line29)
     line3163 = (AMT_rt1 * line30 +
                 AMT_rt2 * max(0., (line30 - (AMT_brk1 / sep))))
@@ -1138,7 +1136,7 @@ def F2441(MARS, earned_p, earned_s, f2441, CDCC_c, e32800,
     return c07180
 
 
-@jit(nopython=True)
+@JIT(nopython=True)
 def EITCamount(basic_frac, phasein_rate, earnings, max_amount,
                phaseout_start, agi, phaseout_rate):
     """
@@ -1660,7 +1658,7 @@ def IITAX(c59660, c11070, c10960, personal_refundable_credit, ctc_new,
     return (eitc, refund, iitax, combined)
 
 
-@jit(nopython=True)
+@JIT(nopython=True)
 def Taxes(income, MARS, tbrk_base,
           rate1, rate2, rate3, rate4, rate5, rate6, rate7, rate8,
           tbrk1, tbrk2, tbrk3, tbrk4, tbrk5, tbrk6, tbrk7):

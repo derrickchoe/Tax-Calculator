@@ -10,8 +10,8 @@ version = '0.0.0'
 
 config = {
     'description': 'Tax Calculator',
-    'url': 'https://github.com/open-source-economics/Tax-Calculator',
-    'download_url': 'https://github.com/open-source-economics/Tax-Calculator',
+    'url': 'https://github.com/PSLmodels/Tax-Calculator',
+    'download_url': 'https://github.com/PSLmodels/Tax-Calculator',
     'description': 'taxcalc',
     'long_description': longdesc,
     'version': version,
@@ -19,7 +19,7 @@ config = {
     'packages': ['taxcalc', 'taxcalc.tbi', 'taxcalc.cli'],
     'include_package_data': True,
     'name': 'taxcalc',
-    'install_requires': ['numpy', 'pandas', 'bokeh', 'numba', 'toolz'],
+    'install_requires': ['numpy', 'pandas', 'bokeh', 'numba'],
     'classifiers': [
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',

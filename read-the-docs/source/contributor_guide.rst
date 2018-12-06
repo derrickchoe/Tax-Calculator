@@ -18,8 +18,8 @@ Setup Python
 -------------
 
 The Tax-Calculator is written in the Python programming language.
-Download and install the free Anaconda distribution of Python 3.6 from
-`Continuum Analytics`_.  You must do this even if you already have
+Download and install the free Anaconda distribution of Python 3.6
+from `Anaconda`_.  You must do this even if you already have
 Python installed on your computer because the Anaconda distribution
 contains all the additional Python packages that we use to conduct tax
 calculations (many of which are not included in other Python
@@ -60,7 +60,7 @@ Setup Git
    others' work to your local machine by entering at the command line::
 
       $ cd Tax-Calculator
-      Tax-Calculator$ git remote add upstream https://github.com/open-source-economics/Tax-Calculator.git
+      Tax-Calculator$ git remote add upstream https://github.com/PSLmodels/Tax-Calculator.git
 
 9. Create a conda environment with all of the necessary packages to
    execute the source code::
@@ -256,7 +256,7 @@ interpreter or imported into a Python notebook for interactive execution.
    https://help.github.com/articles/caching-your-github-password-in-git/
 
 .. _`Tax-Calculator's GitHub page`:
-   https://github.com/open-source-economics/Tax-Calculator
+   https://github.com/PSLmodels/Tax-Calculator
 
 .. _`repository`:
    https://help.github.com/articles/github-glossary/#repository
@@ -270,14 +270,14 @@ interpreter or imported into a Python notebook for interactive execution.
 .. _`Github Flow`:
    https://guides.github.com/introduction/flow/
 
-.. _`Continuum Analytics`:
-   http://www.continuum.io/downloads
+.. _`Anaconda`:
+   https://www.anaconda.com/download/
 
 .. _`remote`:
    https://help.github.com/articles/github-glossary/#remote
 
 .. _`testing documentation`:
-   https://github.com/open-source-economics/Tax-Calculator/blob/master/TESTING.md
+   https://github.com/PSLmodels/Tax-Calculator/blob/master/TESTING.md
 
 .. _`clone`:
    https://help.github.com/articles/github-glossary/#clone
@@ -304,7 +304,7 @@ interpreter or imported into a Python notebook for interactive execution.
    https://help.github.com/articles/creating-a-pull-request/#creating-the-pull-request
 
 .. _`Cookbook of Tested Recipes for Python Programming with Tax-Calculator`:
-   https://github.com/open-source-economics/Tax-Calculator/blob/master/docs/cookbook.html
+   https://github.com/PSLmodels/Tax-Calculator/blob/master/docs/cookbook.html
 
 .. _`detailed pull-request workflow`:
-   https://github.com/open-source-economics/Tax-Calculator/blob/master/WORKFLOW.md#tax-calculator-pull-request-workflow
+   https://github.com/PSLmodels/Tax-Calculator/blob/master/WORKFLOW.md#tax-calculator-pull-request-workflow

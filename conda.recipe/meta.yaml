@@ -8,20 +8,18 @@ build:
 
 requirements:
   build:
-    - python=3.6
+    - python
     - "numpy>=1.13"
-    - "pandas>=0.22"
+    - "pandas>=0.23"
     - "bokeh>=0.13"
     - numba
-    - toolz
 
   run:
-    - python=3.6
+    - python
     - "numpy>=1.13"
-    - "pandas>=0.22"
+    - "pandas>=0.23"
     - "bokeh>=0.13"
     - numba
-    - toolz
 
 test:
   commands:
@@ -30,4 +28,4 @@ test:
     - tc --help
 
 about:
-  home: https://github.com/open-source-economics/Tax-Calculator
+  home: https://github.com/PSLmodels/Tax-Calculator

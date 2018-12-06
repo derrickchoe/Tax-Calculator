@@ -17,12 +17,12 @@ federal income and payroll tax simulation model.  The two ways of
 using Tax-Calculator described here require no computer programming.
 If you are interested in Python programming with Tax-Calculator, you
 should read the tested recipes in our
-<a href="https://open-source-economics.github.io/Tax-Calculator/cookbook.html">
+<a href="https://PSLmodels.github.io/Tax-Calculator/cookbook.html">
 Tax-Calculator Cookbook</a>. If you want to participate in the
 development of Tax-Calculator &mdash; by asking a question, reporting
 a bug, improving the documentation or making an enhancement to the
 Python source code &mdash; you should go to
-the <a href="https://github.com/open-source-economics/Tax-Calculator">
+the <a href="https://github.com/PSLmodels/Tax-Calculator">
 developer website</a>.</p>
 
 <p>Please cite the source of your analysis as <q>Tax-Calculator
@@ -35,34 +35,8 @@ that those materials are available upon request.</p>
 
 <h2 id="whatsnew">What's New</h2>
 
-<p><i>Click your browser's Reload button to
-ensure you are viewing the most recent version of this page rather
-than an older version that your browser has saved in its cache of
-previously visited pages.</i></p>
-
-<p><a href="https://github.com/open-source-economics/Tax-Calculator/blob/master/RELEASES.md#2018-11-13-release-0230">Behavior class is going away soon</a>
-and being replaced by the Behavioral-Responses <kbd>behresp</kbd> package,
-the use of which is demonstrated in
-<a href="https://open-source-economics.github.io/Tax-Calculator/cookbook.html">Cookbook</a> recipe 2</p>
-
-<p><a href="https://github.com/open-source-economics/Tax-Calculator/blob/master/RELEASES.md#2018-10-24-release-0220">Automatic scaling of table results</a>
-(so that Python scripts, and Cookbook recipes, do not need to change
-dollars into billions of dollars and filing units into millions of
-filing units) is available in Tax-Calculator release 0.22.0 and higher</p>
-  
-<p><a href="https://github.com/open-source-economics/Tax-Calculator/blob/master/RELEASES.md#2018-09-11-release-0210">Code changes so works only with
-Python 3.6 plus minor PUF data change</a> are available in Tax-Calculator
-release 0.21.0 and higher.  <b>Note that release 0.21.0 is the first
-release that is compatible with only Python 3.6</b></p>
-
-<p><a href="https://github.com/open-source-economics/Tax-Calculator/blob/master/RELEASES.md#2018-09-06-release-0203">Both CPS and PUF data improvements</a>
-are available in Tax-Calculator release 0.20.3 and higher.
-<b>Note that release 0.20.3 is the last release that will be compatible
-with Python 2.7; subsequest releases will run only with Python 3.6</b></p>
-
-<p><a href="https://github.com/open-source-economics/Tax-Calculator/blob/master/RELEASES.md#2018-05-18-release-0200">Flexible <kbd>quantity_response</kbd>
-utility function</a> is available in Tax-Calculator release 0.20.0 and
-higher, and there is a new Cookbook recipe to illustrate its use</p>
+<p>A list of recent changes to Tax-Calculator can be viewed
+<a href="https://github.com/PSLmodels/Tax-Calculator/blob/master/CHANGES.md#tax-calculator-change-history">here</a>.</p>
 
 <p>To upgrade to the newest version of the Tax-Calculator package,
 execute this command:<br><kbd>conda update -c PSLmodels taxcalc</kbd></p>
@@ -242,10 +216,10 @@ files to TaxBrain.</p>
 <p>Installation of tc CLI involves several steps:</p>
 
 <p><b>Install the free Anaconda Python distribution</b> by going to
-the <a href="https://www.continuum.io/downloads">Continuum Analytics
-download page</a> and selecting a version of Python.  You should install
-Python 3.6 because we will be forced to discontinue support for Python
-2.7 at the end of 2018.  You must do this installation even if you already
+the <a href="https://www.anaconda.com/download/">Anaconda download
+page</a> and selecting Python 3.6.  You should install Python 3.6
+because we have discontinued support for Python 2.7 and are not yet
+supporting Python 3.7.  You must do this installation even if you already
 have Python installed on your computer because the Anaconda
 distribution contains all the additional Python packages that
 Tax-Calculator uses to conduct tax calculations (many of which are not
@@ -280,7 +254,7 @@ Expected output (after about twenty seconds) is <kbd>PASSED
 TEST</kbd>.  If you get <kbd>FAILED TEST</kbd>, something went wrong
 in the installation process.  If the installation test fails, please
 report your experience by creating a new issue at
-<a href="https://github.com/open-source-economics/Tax-Calculator/issues">
+<a href="https://github.com/PSLmodels/Tax-Calculator/issues">
 this website</a> or by sending an email to one of the core maintainers
 of Tax-Calculator listed at the bottom of the <i>What is TaxBrain?</i>
 page at <a href="https://www.ospc.org/taxbrain/">this website</a>.
@@ -294,7 +268,7 @@ the range of tc capabilities, enter the following:
 
 <p>After you have installed the taxcalc package, keep it up to date by
 checking for new releases at
-<a href="https://github.com/open-source-economics/Tax-Calculator/blob/master/RELEASES.md#tax-calculator-release-history">this page</a> and, when there
+<a href="https://github.com/PSLmodels/Tax-Calculator/blob/master/RELEASES.md#tax-calculator-release-history">this page</a> and, when there
 is a new release, executing this command:
 <pre>$ conda update -c PSLmodels taxcalc</pre>
 The packages are usually available about an hour after the release.</p>
@@ -318,7 +292,7 @@ language.</p>
 
 <p>For several examples of reform files and the general rules for
 writing JSON reform files, go
-to <a href="https://github.com/open-source-economics/Tax-Calculator/blob/master/taxcalc/reforms/REFORMS.md">this
+to <a href="https://github.com/PSLmodels/Tax-Calculator/blob/master/taxcalc/reforms/REFORMS.md">this
 page</a>.</p>
 
 <p>If you want to upload a reform file to TaxBrain for static analysis
@@ -350,7 +324,7 @@ widely-used data-specification language.</p>
 
 <p>For examples of economic assumption files and the general rules for
 writing JSON assumption files, go
-to <a href="https://github.com/open-source-economics/Tax-Calculator/blob/master/taxcalc/assumptions/ASSUMPTIONS.md">this
+to <a href="https://github.com/PSLmodels/Tax-Calculator/blob/master/taxcalc/assumptions/ASSUMPTIONS.md">this
 page</a>.</p>
 
 <p>If you want to upload policy reform and economic assumption files
@@ -691,17 +665,17 @@ cps-22-#-ref3-#-doc.text   cps-22-#-ref3-#-tab.text   cps-22-#-ref3-#.csv
 Weighted Tax Reform Totals by Baseline Expanded-Income Decile
     Returns    ExpInc    IncTax    PayTax     LSTax    AllTax
        (#m)      ($b)      ($b)      ($b)      ($b)      ($b)
- 0    17.19     195.0      -6.1      20.9       0.0      14.8
- 1    17.19     496.3      -8.2      44.4       0.0      36.3
+ 0    17.19     195.0      -6.2      20.9       0.0      14.7
+ 1    17.19     496.3      -8.2      44.4       0.0      36.2
  2    17.19     660.1      -3.2      51.7       0.0      48.5
- 3    17.19     823.6       0.8      67.3       0.0      68.0
+ 3    17.19     823.6       0.7      67.3       0.0      68.0
  4    17.19    1023.1       7.1      85.5       0.0      92.6
- 5    17.19    1264.4      16.0     102.8       0.0     118.8
- 6    17.19    1583.8      39.2     135.4       0.0     174.6
- 7    17.19    2025.7      78.8     180.4       0.0     259.2
- 8    17.19    2791.3     172.1     259.1       0.0     431.2
+ 5    17.19    1264.4      15.9     102.8       0.0     118.7
+ 6    17.19    1583.8      39.1     135.4       0.0     174.5
+ 7    17.19    2025.7      78.7     180.4       0.0     259.1
+ 8    17.19    2791.3     172.0     259.1       0.0     431.2
  9    17.19    6276.2    1012.3     471.2       0.0    1483.5
- A   171.93   17139.6    1308.9    1418.8       0.0    2727.6
+ A   171.93   17139.6    1308.2    1418.8       0.0    2727.0
 
 Weighted Tax Differences by Baseline Expanded-Income Decile
     Returns    ExpInc    IncTax    PayTax     LSTax    AllTax
@@ -709,14 +683,14 @@ Weighted Tax Differences by Baseline Expanded-Income Decile
  0    17.19     195.0      -1.7       0.0       0.0      -1.7
  1    17.19     496.3      -7.0       0.0       0.0      -7.0
  2    17.19     660.1      -8.3       0.0       0.0      -8.3
- 3    17.19     823.6     -10.7       0.0       0.0     -10.7
+ 3    17.19     823.6     -10.8       0.0       0.0     -10.8
  4    17.19    1023.1     -14.9       0.0       0.0     -14.9
  5    17.19    1264.4     -21.2       0.0       0.0     -21.2
  6    17.19    1583.8     -28.6       0.0       0.0     -28.6
  7    17.19    2025.7     -38.5       0.0       0.0     -38.5
- 8    17.19    2791.3     -62.3       0.0       0.0     -62.3
+ 8    17.19    2791.3     -62.4       0.0       0.0     -62.4
  9    17.19    6276.2     -71.3       0.0       0.0     -71.3
- A   171.93   17139.6    -264.5       0.0       0.0    -264.5
+ A   171.93   17139.6    -264.7       0.0       0.0    -264.7
 </pre></p>
 
 <p>Example (7) produces 2022 static output for the filing units in the
@@ -775,7 +749,7 @@ name of this option stands for certainty-equivalent expected utility.
 If you want to use this output option, you should read the commented
 Python source code for the <kbd>ce_aftertax_expanded_income</kbd>
 function in the <kbd>taxcalc/utils.py</kbd> file at the
-<a href="https://github.com/open-source-economics/Tax-Calculator">
+<a href="https://github.com/PSLmodels/Tax-Calculator">
 developer website</a>.</p>
 
 <p id="baseline">None of the above examples use the
@@ -788,7 +762,7 @@ To do this we need to have pre-TCJA policy be the baseline policy and
 we need to have the alternative reform be implemented relative to
 pre-TCJA policy.  The following tc run does exactly that using a local
 copy of
-the <a href="https://github.com/open-source-economics/Tax-Calculator/blob/master/taxcalc/reforms/2017_law.json">2017_law.json<a>
+the <a href="https://github.com/PSLmodels/Tax-Calculator/blob/master/taxcalc/reforms/2017_law.json">2017_law.json<a>
 file and the <kbd>alt_reform.json</kbd> file containing the
 alternative reform defined relative to pre-TCJA law.</p>
 
@@ -915,11 +889,11 @@ filing status (MARS) | weighted count of filing units
 weighted count of those with NEGATIVE MTR
 15.338
 bin number | weighted count | mean NON-NEGATIVE MTR in bin
--1|26.74|0.0
-0|2.487|7.16
-1|60.446|14.14
-2|38.274|25.55
-3|13.156|32.26
+-1|26.649|0.0
+0|2.484|7.17
+1|60.493|14.14
+2|38.317|25.55
+3|13.159|32.26
 4|0.988|43.15
 5|0.113|55.53
 6|0.016|66.75
@@ -962,7 +936,7 @@ file-upload page</a>.</p>
 
 <p>An extended example of how preliminary tax analysis on your
 computer can be combined with TaxBrain file-uploading is
-<a href="https://github.com/open-source-economics/Tax-Calculator/issues/1335">here</a>.</p>
+<a href="https://github.com/PSLmodels/Tax-Calculator/issues/1335">here</a>.</p>
 
 <p><a href="#cli">Back to Section Contents</a>&nbsp;&nbsp;
 <a href="#doc">Back to Document Contents</a></p>
@@ -1216,7 +1190,7 @@ annual rate of growth in economic variables.</p>
 those with a <i>TB Name</i> appear in the TaxBrain GUI.  All these
 assumption parameters control advanced features of Tax-Calculator, so
 understanding the
-<a href="https://github.com/open-source-economics/Tax-Calculator/tree/master/taxcalc">source
+<a href="https://github.com/PSLmodels/Tax-Calculator/tree/master/taxcalc">source
 code</a> that uses them is essential.  Default values of most
 assumption parameters are zero and are projected into the future at
 that value, which implies no response to the reform.  Using the

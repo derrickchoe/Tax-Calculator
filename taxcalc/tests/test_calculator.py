@@ -53,7 +53,6 @@ def test_make_calculator(cps_subsample):
     calc = Calculator(policy=pol, records=rec,
                       consumption=consump, behavior=Behavior())
     assert calc.current_year == Records.CPSCSV_YEAR
-    assert calc.records_current_year() == Records.CPSCSV_YEAR
     # test incorrect Calculator instantiation:
     with pytest.raises(ValueError):
         Calculator(policy=None, records=rec)
@@ -514,7 +513,7 @@ def test_json_reform_url():
       }
     }
     """
-    reform_url = ('https://raw.githubusercontent.com/open-source-economics/'
+    reform_url = ('https://raw.githubusercontent.com/PSLmodels/'
                   'Tax-Calculator/master/taxcalc/reforms/ptaxes0.json')
     params_str = Calculator.read_json_param_objects(reform_str, None)
     params_url = Calculator.read_json_param_objects(reform_url, None)
@@ -676,7 +675,7 @@ def test_json_assump_url():
         }
     }
     """
-    assump_url = ('https://raw.githubusercontent.com/open-source-economics/'
+    assump_url = ('https://raw.githubusercontent.com/PSLmodels/'
                   'Tax-Calculator/master/taxcalc/assumptions/'
                   'economic_assumptions_template.json')
     params_str = Calculator.read_json_param_objects(None, assump_str)
