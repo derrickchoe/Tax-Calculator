@@ -1004,7 +1004,8 @@ def AGIsurtax(c00100, MARS, AGI_surtax_trt, AGI_surtax_thd, taxbc, surtax):
 @iterate_jit(nopython=True)
 def AMT(e07300, dwks13, standard, f6251, c00100, c18300, taxbc,
         c04470, c17000, c20800, c21040, e24515, MARS, sep, dwks19,
-        dwks14, c05700, e62900, e00700, dwks10, age_head, earned, cmbtp,
+        dwks14, c05700, e62900, e00700, dwks10, age_head, age_spouse,
+        earned, cmbtp,
         AMT_child_em_c_age, AMT_brk1,
         AMT_em, AMT_prt, AMT_rt1, AMT_rt2,
         AMT_child_em, AMT_em_ps, AMT_em_pe,
@@ -1036,7 +1037,9 @@ def AMT(e07300, dwks13, standard, f6251, c00100, c18300, taxbc,
     # Form 6251, Part II top
     line29 = max(0., AMT_em[MARS - 1] - AMT_prt *
                  max(0., c62100 - AMT_em_ps[MARS - 1]))
-    if age_head != 0 and age_head < AMT_child_em_c_age:
+    young_head = age_head != 0 and age_head < AMT_child_em_c_age
+    no_or_young_spouse = age_spouse < AMT_child_em_c_age
+    if young_head and no_or_young_spouse:
         line29 = min(line29, earned + AMT_child_em)
     line30 = max(0., c62100 - line29)
     line3163 = (AMT_rt1 * line30 +
@@ -1114,15 +1117,15 @@ def F2441(MARS, earned_p, earned_s, f2441, CDCC_c, e32800,
     """
     Calculates Form 2441 child and dependent care expense credit, c07180.
     """
+    # credit for at most two cared-for individuals and for actual expenses
+    max_credit = min(f2441, 2) * CDCC_c
+    c32800 = max(0., min(e32800, max_credit))
+    # credit is limited to minimum of individuals' earned income
     c32880 = earned_p  # earned income of taxpayer
     if MARS == 2:
-        c32890 = earned_s  # earned income of spouse, if present
+        c32890 = earned_s  # earned income of spouse when present
     else:
         c32890 = earned_p
-    dclim = min(f2441, 2) * CDCC_c
-    # care expenses are limited by policy
-    c32800 = max(0., min(e32800, dclim))
-    # credit is limited to minimum of individuals' earned income
     c33000 = max(0., min(c32800, min(c32880, c32890)))
     # credit is limited by AGI-related fraction
     if exact == 1:  # exact calculation as on tax forms
@@ -1158,17 +1161,17 @@ def EITCamount(basic_frac, phasein_rate, earnings, max_amount,
 def EITC(MARS, DSI, EIC, c00100, e00300, e00400, e00600, c01000,
          e27200, age_head, age_spouse, earned, earned_p, earned_s,
          EITC_ps, EITC_MinEligAge, EITC_MaxEligAge, EITC_ps_MarriedJ,
-         EITC_rt, EITC_c, EITC_prt, EITC_InvestIncome_c, EITC_indiv,
-         EITC_basic_frac, c59660):
+         EITC_rt, EITC_c, EITC_prt, EITC_basic_frac,
+         EITC_InvestIncome_c, EITC_excess_InvestIncome_rt,
+         EITC_indiv,
+         c59660):
     """
     Computes EITC amount, c59660.
     """
     # pylint: disable=too-many-branches
     if not EITC_indiv:
         # filing-unit and number-of-kids based EITC (rather than indiv EITC)
-        invinc = (e00400 + e00300 + e00600 +
-                  max(0., c01000) + max(0., e27200))
-        if MARS == 3 or DSI == 1 or invinc > EITC_InvestIncome_c:
+        if MARS == 3 or DSI == 1:
             c59660 = 0.
         else:
             po_start = EITC_ps[EIC]
@@ -1196,6 +1199,14 @@ def EITC(MARS, DSI, EIC, c00100, e00300, e00400, e00600, c01000,
                         c59660 = 0.
             else:  # if EIC != 0
                 c59660 = eitc
+            # reduce positive EITC if investment income exceeds ceiling
+            if c59660 > 0.:
+                invinc = (e00400 + e00300 + e00600 +
+                          max(0., c01000) + max(0., e27200))
+                if invinc > EITC_InvestIncome_c:
+                    eitc = (c59660 - EITC_excess_InvestIncome_rt *
+                            (invinc - EITC_InvestIncome_c))
+                    c59660 = max(0., eitc)
     else:
         # individual EITC rather than a filing-unit EITC
         # .. calculate eitc amount for taxpayer
