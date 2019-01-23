@@ -47,8 +47,7 @@ def test_instantiation_and_usage():
 
 
 @pytest.mark.parametrize("fname",
-                         [("behavior.json"),
-                          ("consumption.json"),
+                         [("consumption.json"),
                           ("policy_current_law.json"),
                           ("growdiff.json")])
 def test_json_file_contents(tests_path, fname):
@@ -179,8 +178,12 @@ def test_json_file_contents(tests_path, fname):
                 if len(rowlabel) != (known_years - 1):
                     error = True
             else:
-                if len(rowlabel) != known_years:
-                    error = True
+                if pname == '_SS_Earnings_c':
+                    if len(rowlabel) != known_years + 2:
+                        error = True
+                else:
+                    if len(rowlabel) != known_years:
+                        error = True
             if error:
                 msg = 'param:<{}>; len(rowlabel)={}; known_years={}'
                 fail = msg.format(pname, len(rowlabel), known_years)
@@ -190,8 +193,7 @@ def test_json_file_contents(tests_path, fname):
 
 
 @pytest.mark.parametrize("jfname, pfname",
-                         [("behavior.json", "behavior.py"),
-                          ("consumption.json", "consumption.py"),
+                         [("consumption.json", "consumption.py"),
                           ("policy_current_law.json", "calcfunctions.py"),
                           ("growdiff.json", "growdiff.py")])
 def test_parameters_mentioned(tests_path, jfname, pfname):
@@ -243,12 +245,17 @@ def test_expand_1d_scalar():
     """
     One of several _expand_?D tests.
     """
+    yrs = 12
     val = 10.0
-    exp = np.array([val * math.pow(1.02, i) for i in range(0, 10)])
+    exp = np.array([val * math.pow(1.02, i) for i in range(0, yrs)])
     res = Parameters._expand_1D(np.array([val]),
-                                inflate=True, inflation_rates=[0.02] * 10,
-                                num_years=10)
+                                inflate=True, inflation_rates=[0.02] * yrs,
+                                num_years=yrs)
     assert np.allclose(exp, res, atol=0.01, rtol=0.0)
+    res = Parameters._expand_1D(np.array([val]),
+                                inflate=True, inflation_rates=[0.02] * yrs,
+                                num_years=1)
+    assert np.allclose(np.array([val]), res, atol=0.01, rtol=0.0)
 
 
 def test_expand_2d_short_array():
@@ -333,7 +340,6 @@ def test_expand_2d_partial_expand():
 
 @pytest.mark.parametrize('json_filename',
                          ['policy_current_law.json',
-                          'behavior.json',
                           'consumption.json',
                           'growdiff.json'])
 def test_bool_int_value_info(tests_path, json_filename):

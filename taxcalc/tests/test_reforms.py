@@ -10,7 +10,7 @@ import glob
 import json
 import pytest
 # pylint: disable=import-error
-from taxcalc import Calculator, Policy, Records, Behavior, DIST_TABLE_COLUMNS
+from taxcalc import Calculator, Policy, Records, DIST_TABLE_COLUMNS
 from taxcalc import nonsmall_diffs
 
 
@@ -123,9 +123,9 @@ def test_reform_json_and_output(tests_path):
         raise ValueError(msg)
 
 
-def reform_results(reform_dict, puf_data, reform_2017_law):
+def reform_results(rid, reform_dict, puf_data, reform_2017_law):
     """
-    Return actual results of the reform specified in reform_dict.
+    Return actual results of the reform specified by rid and reform_dict.
     """
     # pylint: disable=too-many-locals
     rec = Records(data=puf_data)
@@ -138,41 +138,31 @@ def reform_results(reform_dict, puf_data, reform_2017_law):
     else:
         msg = 'illegal baseline value {}'
         raise ValueError(msg.format(reform_dict['baseline']))
-    calc1 = Calculator(policy=pol, records=rec, verbose=False, behavior=None)
-    # create reform Calculator object, calc2, with possible behavioral response
+    calc1 = Calculator(policy=pol, records=rec, verbose=False)
+    # create reform Calculator object, calc2
     start_year = reform_dict['start_year']
-    beh = Behavior()
-    if '_BE_cg' in reform_dict['value']:
-        elasticity = reform_dict['value']['_BE_cg']
-        del reform_dict['value']['_BE_cg']  # in order to have a valid reform
-        beh_assump = {start_year: {'_BE_cg': elasticity}}
-        beh.update_behavior(beh_assump)
     reform = {start_year: reform_dict['value']}
     pol.implement_reform(reform)
-    calc2 = Calculator(policy=pol, records=rec, verbose=False, behavior=beh)
+    calc2 = Calculator(policy=pol, records=rec, verbose=False)
     # increment both Calculator objects to reform's start_year
     calc1.advance_to_year(start_year)
     calc2.advance_to_year(start_year)
-    # calculate prereform and postreform output for several years
+    # calculate baseline and reform output for several years
     output_type = reform_dict['output_type']
     num_years = 4
     results = list()
     for _ in range(0, num_years):
         calc1.calc_all()
-        prereform = calc1.array(output_type)
-        if calc2.behavior_has_response():
-            calc2_br = Behavior.response(calc1, calc2)
-            postreform = calc2_br.array(output_type)
-        else:
-            calc2.calc_all()
-            postreform = calc2.array(output_type)
-        diff = postreform - prereform
+        baseline = calc1.array(output_type)
+        calc2.calc_all()
+        reform = calc2.array(output_type)
+        diff = reform - baseline
         weighted_sum_diff = (diff * calc1.array('s006')).sum() * 1.0e-9
         results.append(weighted_sum_diff)
         calc1.increment_year()
         calc2.increment_year()
     # write actual results to actual_str
-    actual_str = 'Tax-Calculator'
+    actual_str = '{}'.format(rid)
     for iyr in range(0, num_years):
         actual_str += ',{:.1f}'.format(results[iyr])
     return actual_str
@@ -199,17 +189,22 @@ def fixture_reforms_dict(tests_path):
     return json.loads(rjson)
 
 
-NUM_REFORMS = 64
+NUM_REFORMS = 64  # when changing this also change num_reforms in conftest.py
 
 
 @pytest.mark.requires_pufcsv
 @pytest.mark.parametrize('rid', [i for i in range(1, NUM_REFORMS + 1)])
-def test_reform(rid, baseline_2017_law, reforms_dict, puf_subsample):
+def test_reforms(rid, test_reforms_init, tests_path, baseline_2017_law,
+                 reforms_dict, puf_subsample):
     """
-    Compare actual and expected results for specified reform in reforms_dict.
+    Write actual reform results to files.
     """
-    reform_id = str(rid)
-    actual = reform_results(reforms_dict[reform_id],
-                            puf_subsample,
-                            baseline_2017_law)
-    assert actual == reforms_dict[reform_id]['expected']
+    # pylint: disable=too-many-arguments
+    assert test_reforms_init == NUM_REFORMS
+    actual = reform_results(rid, reforms_dict[str(rid)],
+                            puf_subsample, baseline_2017_law)
+    afile_path = os.path.join(tests_path,
+                              'reform_actual_{}.csv'.format(rid))
+    with open(afile_path, 'w') as afile:
+        afile.write('rid,res1,res2,res3,res4\n')
+        afile.write('{}\n'.format(actual))
