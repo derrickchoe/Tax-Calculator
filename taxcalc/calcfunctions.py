@@ -716,7 +716,7 @@ def AdditionalMedicareTax(e00200, MARS,
 @iterate_jit(nopython=True)
 def StdDed(DSI, earned, STD, age_head, age_spouse, STD_Aged, STD_Dep,
            MARS, MIDR, blind_head, blind_spouse, standard, c19700,
-           STD_allow_charity_ded_nonitemizers):
+           STD_allow_charity_ded_nonitemizers, STD_nonitemizer_charity_c):
     """
     Calculates standard deduction, including standard deduction for
     dependents, aged and bind.
@@ -770,7 +770,7 @@ def StdDed(DSI, earned, STD, age_head, age_spouse, STD_Aged, STD_Dep,
     if MARS == 3 and MIDR == 1:
         standard = 0.
     if STD_allow_charity_ded_nonitemizers:
-        standard += c19700
+        standard += min(c19700, STD_nonitemizer_charity_c[MARS - 1])
     return standard
 
 
@@ -1458,7 +1458,8 @@ def EducationTaxCredit(exact, e87530, MARS, c00100, num, c05800,
 
 @iterate_jit(nopython=True)
 def CharityCredit(e19800, e20100, c00100, CR_Charity_rt, CR_Charity_f,
-                  CR_Charity_frt, MARS, charity_credit):
+                  CR_Charity_frt, MARS, charity_credit, standard,
+                  CR_charity_credit_only_nonitemizers):
     """
     Computes nonrefundable charity credit, charity_credit.
     This credit is not part of current-law policy.
@@ -1466,7 +1467,13 @@ def CharityCredit(e19800, e20100, c00100, CR_Charity_rt, CR_Charity_f,
     total_charity = e19800 + e20100
     floor = max(CR_Charity_frt * c00100, CR_Charity_f[MARS - 1])
     charity_cr_floored = max(total_charity - floor, 0)
-    charity_credit = CR_Charity_rt * (charity_cr_floored)
+    if CR_charity_credit_only_nonitemizers:
+        if standard > 0:
+            charity_credit = CR_Charity_rt * (charity_cr_floored)
+        else:
+            charity_credit = 0
+    else:
+        charity_credit = CR_Charity_rt * (charity_cr_floored)
     return charity_credit
 
 
